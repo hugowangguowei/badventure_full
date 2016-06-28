@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script type="text/javascript" src="../dep/jquery-1.9.1.js"></script>
+    <script>
+
+        //地图
+        var map = [];
+        var map_w = 50;
+        var map_h = 50;
+
+        //蛇
+        var snake = [];
+        var snake_init_l = 3;
+        var headDir = "L"//（L,R,U,D）
+
+        //帧
+        var frameTime = 500;
+
+        function init(){
+            //mapInit
+            for(var i = 0;i<map_w*map_h;i++){
+                map.push(0);
+            }
+            var foodLoc = 0;
+            generateNewFood();
+
+            //initSnake
+            var headLoc_x = parseInt(Math.random()*(map_w - snake_init_l));
+            var headLoc_y = parseInt(Math.random()*map_h);
+            snake[0] = headLoc_x + headLoc_y*map_w;
+            for(var i = 1;i<snake_init_l;i++){
+                snake[i] = snake[i - 1] + 1;
+            }
+
+            //initCanvas
+            var c_w = 800;
+            var c_h = 800;
+            var canvas = document.getElementById("mainCanvas");
+            canvas.width = c_w;
+            canvas.height = c_h;
+            var cache = document.createElement("canvas");
+            cache.width = c_w;
+            cache.height = c_h;
+            var cacheCxt = cache.getContext("2d");
+            var _w = canvas.width/map_w;
+            var _h = canvas.height/map_h;
+            for(var i = 0;i<map_w*map_h;i++){
+                var _x = (i%map_w)*_w;
+                var _y = parseInt(i/map_h)*_h;
+                cacheCxt.strokeRect(_x,_y,_w,_h);
+            }
+
+            draw(canvas);
+            //操作缓存
+            var operateList = [];
+
+            window.setInterval(function(){
+                snakeAction();
+                draw(canvas);
+            },frameTime);
+
+            function snakeAction(){
+                var headLoc = snake[0];
+                var newLoc = 0;
+                var isDead = false;
+                var isLonger = false;
+                switch (headDir){
+                    case "L":
+                            newLoc = headLoc - 1;
+                            if(headLoc%map_w == 0){
+                                isDead = true;
+                            }
+                        break;
+                    case "R":
+                            newLoc = headLoc + 1;
+                            if(headLoc%map_w == (map_w - 1)){
+                                isDead = true;
+                            }
+                        break;
+                    case "U":
+                            newLoc = headLoc - map_w;
+                            if(parseInt(headLoc/map_w) == 0){
+                                isDead = true;
+                            }
+                        break;
+                    case "D":
+                            newLoc = headLoc + map_w;
+                            if(parseInt(headLoc/map_w) == (map_h - 1)){
+                                isDead = true;
+                            }
+                        break;
+                }
+
+                outerLoop:
+                for(var i = 1;i<snake.length;i++){
+                    if(newLoc == snake[i]){
+                        isDead = true;
+                        break outerLoop;
+                    }
+                }
+
+                if(isDead){
+                    alert("GAME OVER press F5 to Restart");
+                    return false;
+                }
+
+                var newLen = snake.unshift(newLoc);
+
+                if(map[newLoc]){
+                    isLonger = true;
+                    generateNewFood();
+                }else{
+                    snake.splice(newLen -1,1);
+                }
+
+            }
+
+            function generateNewFood(){
+                var loc = parseInt(Math.random()*(map_w * map_h));
+                for(var i = 0;i<snake.length;i++){
+                    if(loc == snake[i]){
+                        generateNewFood();
+                        return;
+                    }
+                }
+                map[loc] = 1;
+                foodLoc = loc;
+            }
+
+            function draw(canvas){
+                var cxt = canvas.getContext("2d");
+                cxt.clearRect(0,0,canvas.width,canvas.height);
+                cxt.drawImage(cache,0,0,canvas.width,canvas.height);
+                for(var i = 0;i<snake.length;i++){
+                    var _x = (snake[i]%map_w)*_w;
+                    var _y = parseInt(snake[i]/map_h)*_h;
+                    cxt.fillStyle = "grey";
+                    cxt.fillRect(_x,_y,_w,_h);
+                }
+                cxt.fillStyle = "green";
+                var _x =(foodLoc%map_w)*_w;
+                var _y = parseInt(foodLoc/map_h)*_h;
+                cxt.fillRect(_x,_y,_w,_h);
+            }
+
+        }
+
+        $(document).keydown(function(event){
+            switch (event.keyCode){
+                case 37:
+                    headDir = "L";
+                    break;
+                case 38:
+                    headDir = "U";
+                    break;
+                case 39:
+                    headDir = "R";
+                    break;
+                case 40:
+                    headDir = "D";
+                    break;
+            }
+        });
+
+    </script>
+</head>
+<body onload="init()">
+<canvas id = "mainCanvas"></canvas>
+</body>
+</html>

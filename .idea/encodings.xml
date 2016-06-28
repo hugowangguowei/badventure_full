@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/client/baBasicLib/baGlobal.js" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/client/baBasicLib/webSocket/WS_Manager.js" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/client/gameLib/Game.js" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/client/gameLib/controller/SpriteManager.js" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/client/gameLib/view/PROP_view.js" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/client/gameLib/webSocket/WS_Config.js" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/private/Game.js" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/private/GameManager.js" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/private/script/revengerRoad/chapter_1/sprite/DarkTower.js" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/private/script/revengerRoad/chapter_1/sprite/Knight.js" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/private/script/revengerRoad/chapter_1/sprite/Sprite_c1.js" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/private/socket/Client.js" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/private/socket/socket_msgHandle.js" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/views/index.jade" charset="UTF-8" />
+    <file url="PROJECT" charset="UTF-8" />
+  </component>
+</project>

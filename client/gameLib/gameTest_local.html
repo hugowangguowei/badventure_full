@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="UI/style.css" type="text/css"/>
+    <script type="text/javascript" src="../dep/require.js"></script>
+    <script type="text/javascript" src="../dep/jquery-1.9.1.js"></script>
+    <script type="text/javascript" src="./test/script/revengerRoad/chapter_1/buttonEvent_local.js"></script>
+    <script>
+        requirejs.config({
+            baseUrl:"../",
+            path:{
+                baBasicLib:"./baBasicLib",
+                config:"./config",
+                gameStateMachine:"./gameStateMachine",
+                dep:"../dep",
+                privateLib:"./privateLib",
+                socket:":/socket",
+                test:"./test"
+            }
+        });
+        var gm;
+        var WSM;
+        //是否单身
+        var isSingle = true;
+        require(['gameLib/Game',
+                    'gameLib/script/revengerRoad/chapter_1',
+                    'gameLib/view/GAME_view'],
+                function(Game,chapter_1,GameView){
+                    gm = new Game();
+                    var mainCanvas = document.getElementById("mainCanvas");
+                    var gameView = new GameView(mainCanvas,gm);
+                    gm.loadChapter(chapter_1,null,true);
+        });
+    </script>
+</head>
+<body onload="init()">
+<input type="button" id = "t1" value="test1" onclick="test1()">
+<input type="button" id = "t2" value="test1" onclick="test2()">
+<input type="button" id = "t3" value="test1" onclick="test3()">
+<input type="button" id = "t4" value="test1" onclick="test4()">
+<input type="button" id = "t5" value="test1" onclick="test5()">
+<hr>
+<canvas id = "mainCanvas"></canvas>
+</body>
+</html>
