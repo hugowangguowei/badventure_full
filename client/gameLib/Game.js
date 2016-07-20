@@ -95,7 +95,7 @@ define(function(require){
         var t2 = new Date().getTime();
         console.log(t2 - t1);
     };
-    Game.prototype.input = function (type,info,packNum) {
+    Game.prototype.input = function (type,info,packNum){
         var self = this;
         switch (type){
             case "addSprite":

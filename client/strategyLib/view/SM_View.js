@@ -15,7 +15,8 @@ define(function(require){
         this.canvas = null;
         this.cw = 0;
         this.ch = 0;
-        this.initialize(div,model)
+        this.initialize(div,model);
+        this.canvasOperateType = "add";//在画布上的操作类型{'add'/'delete'}
     }
 
     SM_View.prototype = new View();
@@ -28,16 +29,22 @@ define(function(require){
         this.strategy = model.curStrategy;
         this.addOriListeners();
         this.addBasicStruct();
-        this.initCanvas();
-        this.draw();
     };
     SM_View.prototype.addOriListeners = function(){
-
+        var self = this;
+        var prop = {
+            id: this.id,
+            class: "ori"
+        };
+        this.model.addListener("canvasChange",prop,function(){
+            self.draw();
+        });
     };
     SM_View.prototype.addBasicStruct = function(){
+        var self = this;
         this.div.innerHTML = "" +
             "<input type='button' id = 'sB_0' value = '新建' class='sB'>" +
-            "<input type='test' id = 'sT_0' placeholder = '阵型名称'>"+
+            //"<input type='test' id = 'sT_0' placeholder = '阵型名称'>"+
             "<input type='button' id = 'sB_1' value = '提交' class = 'sB'>"+
             "<hr>"+
             "<input type='button' id = 'sB_2' value ='添加' class='sB'>" +
@@ -56,17 +63,76 @@ define(function(require){
         $('#sB_2').hide();
         $('#sB_3').hide();
         $('#sH_0').hide();
+        $("#sCanvas").hide();
 
+        //创建阵型按钮
         $("#sB_0").click(function(){
-            $("#sB_0").hide();
-            $("#sT_0").show();
-            $('#sB_1').show();
-            $('#sB_2').show();
-            $('#sB_3').show();
             $('#sH_0').show();
+            if(self.initDiv()){
+                $("#sB_0").hide();
+                $("#sT_0").show();
+                $('#sB_1').show();
+                $('#sB_2').show();
+                $('#sB_3').show();
+                $('#sCanvas').show();
+                self.initCanvas();
+                self.draw();
+            }
+
+        });
+
+        //提交阵型按钮
+        $("#sB_1").click(function(){
+            if(self.strategy.isBuildFinish()){
+                self.model.submitStrategy();
+            }else{
+                $("#sH_0").html("你尚未完成编辑，药不能停！");
+            }
+        });
+
+        //添加布置按钮
+        $("#sB_2").click(function(){
+            self.canvasOperateType = "add";
+        });
+
+        //删除布置按钮
+        $("#sB_3").click(function(){
+            self.canvasOperateType = "delete";
+        });
+
+        //绑定canvas点击事件
+        $("#sCanvas").click(function(e){
+            var x = e.pageX;
+            var y = e.pageY;
+            var loc = baLib.getPointOnDiv(x,y,self.canvas);
+            var detail = {
+                type:self.canvasOperateType,
+                x:loc.x,
+                y:loc.y,
+                w:self.canvas.width,
+                h:self.canvas.height
+            };
+            self.model.input({type:"canvasClick",detail:detail});
         });
 
     };
+    SM_View.prototype.initDiv = function(){
+        var ctrObj = this.model.game.controlObj;
+        if(!ctrObj){
+            $('#sH_0').html("抱歉，你还没有开始游戏");
+            return false;
+        }
+        var strategyInfo = ctrObj.strategyInfo;
+        if(!strategyInfo.hasStrategy){
+            $('#sH_0').html("抱歉！你的角色无法创建阵型");
+            return false;
+        }else{
+            var ability = strategyInfo.ability;
+            this.strategy.initByAbility(ability);
+            $('#sH_0').html("可设置的随从数量：" + this.strategy.maxCtr);
+            return true;
+        }
+    }
     SM_View.prototype.initCanvas = function(){
         this.cache = document.createElement("canvas");
         this.cache.width = 300;
@@ -87,7 +153,11 @@ define(function(require){
         }
     };
     SM_View.prototype.draw = function(){
+        //更新说明
+        $('#sH_0').html("可设置的随从数量：" + this.strategy.curCtr);
+        //更新canvas
         var cxt = this.canvas.getContext("2d");
+        cxt.clearRect(0,0,this.canvas.width,this.canvas.height);
         cxt.drawImage(this.cache,0,0);
         var data = this.strategy.data;
         var w = this.strategy.width;
@@ -113,6 +183,5 @@ define(function(require){
             }
         }
     }
-
     return SM_View;
 });

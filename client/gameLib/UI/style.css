@@ -6,12 +6,17 @@
     /*border:solid 1px black;*/
     left: 0;
 }
+#t6{
+    background-color: #fc8c84;
+}
 #introduce{
-    position: absolute;
-    margin: 0 51.5%;
-    background-color: #cccccc;
+    position:relative;
+    margin: 0 0;
+    /*background-color: #cccccc;*/
     border:solid 1px black;
+    box-shadow:0 0 10px black;
     left: 0;
+    z-index: 200;
 }
 #prop{
     position: absolute;

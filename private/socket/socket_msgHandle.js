@@ -99,6 +99,16 @@ exports.clientHandle = function(){
             var game = GM.getGameByPlayer(this);
             game.clientDebug(info);
         }},
+        //战略输入
+        //之所以不放入gameInput中，是希望在以后用单独的服务器来管理战略模块
+        {msgName:"submitStrategy",msgFunc:function(info){
+            var client = CM.getClientBySocketId(this.id);
+            if(!client||!client.game||!client.sprite){
+                return null;
+            }
+            var sprite_i = client.sprite;
+            sprite_i.addStrategy(info);
+        }}
     ];
 }
 

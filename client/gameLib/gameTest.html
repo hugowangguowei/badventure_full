@@ -12,7 +12,8 @@
         requirejs.config({
             baseUrl:"../",
             path:{
-                baBasicLib:"./baBasicLib",
+                baBasicLib:"../baBasicLib",
+                strategyLib:"../strategyLib",
                 config:"./config",
                 gameStateMachine:"./gameStateMachine",
                 dep:"../dep",
@@ -31,7 +32,7 @@
                 'gameLib/view/GAME_view',
                 'gameLib/view/PROP_view',
                 'gameLib/view/RECORD_view',
-                'strategyLib/StrategyManager'
+                'strategyLib/strategyManager'
                 ],
                 function(
                         Game,chapter_1,GameView,PropView,
@@ -62,6 +63,7 @@
 <input type="button" id = "t1" value="test1" onclick="test1()">
 <input type="button" id = "t4" value="test4" onclick="test4()">
 <input type="button" id = "t5" value="test5" onclick="test5()">
+<input type="button" id = "t6" value="查看帮助文档" onclick="test6()">
 <hr>
 先点‘连接服务器’按钮，然后点 ‘加入游戏’， 键盘上的 ←→ ↑ ↓ 可以控制某个对象
 <hr>
@@ -73,13 +75,14 @@
     <div id = "prop_damage" class="propTag"></div>
     <div id = "prop_armor" class="propTag"></div>
 </div>
-<div id = "record" style = "width:300px;height: 600px">
+<div id = "record" style = "width:300px;height: 400px">
     <h4>当前排名：</h4>
     <table id = "recordList">
     </table>
 </div>
 <div id = "strategy" style="width:300px;height:600px"></div>
-<!--<div id = "introduce" style="width: 500px; height: 800px">-->
+<div id = "introduce" style="width: 582px; height: 608px">
+    <img src="../image/intro.PNG">
     <!--游戏介绍：-->
     <!--<hr>-->
     <!--用户点击加入游戏，成功后将会显示当前战场上所有的对象-->
@@ -89,6 +92,6 @@
     <!--<hr>-->
     <!--三角形的点是骑士：骑士的攻击力会随着移动速度的增加而增加。-->
     <!--小方块的点是熊：熊好像没啥特长。。。-->
-<!--</div>-->
+</div>
 </body>
 </html>

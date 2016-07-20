@@ -32,6 +32,8 @@ function Game(initInfo){
     this.spriteList = {};
     //精灵计数
     this.spriteCount = 0;
+    //障碍列表
+    this.obstacleList = [];
     //章节事件
     this.chapEvent = null;
     //计时器
@@ -96,6 +98,10 @@ Game.prototype.loadChapter = function(chapterInfo){
             }
         }
     }
+    //载入固定物（障碍）
+    if(chapterInfo.obstacle){
+        this.obstacleList = chapterInfo.obstacle;
+    }
     //载入事件
     if(chapterInfo.event){
         this.chapEvent = chapterInfo.event;
@@ -112,7 +118,7 @@ Game.prototype.startMachine = function(){
     this.timer.proHandle = setInterval(function(){
         self.autoCtrl();
         self.checkChapEvent();
-        timeAnalyzer.setBeginTime();
+        //timeAnalyzer.setBeginTime();
         var changedSprite = [];
         for(var i in self.spriteList){
             var sprite_i = self.spriteList[i];
@@ -120,8 +126,7 @@ Game.prototype.startMachine = function(){
             changedSprite.push(sprite_i.getOutPut());
         }
         self.dataPool.push(changedSprite);
-        timeAnalyzer.setEndTime();
-        //self.dataAnalyse();
+        //timeAnalyzer.setEndTime();
     },this.timer.proFS);
     //数据处理
     this.timer.dataHandle = setInterval(function(){

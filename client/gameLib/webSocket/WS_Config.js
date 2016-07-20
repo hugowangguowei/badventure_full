@@ -7,8 +7,8 @@ define(function(require){
     var SSIT = require('gameLib/webSocket/WS_msgDefine').SSIT;
 
     return {
-        WS_URL:'http://badventure.duapp.com:80',
-        //WS_URL:'localhost:18080',
+        //WS_URL:'http://badventure.duapp.com:80',
+        WS_URL:'localhost:18080',
         msgHandleList:[
             {msgName:SMT.SYSTEM_INFORM,msgFunc:function(msgInfo){
                 /**msgInfo的标准格式如下：
@@ -18,6 +18,7 @@ define(function(require){
                     console.log(msgInfo);
                     return;
                 }
+
                 switch (msgInfo.type){
                     case SSIT.INFORM:
                         _inform(msgInfo.detail);
@@ -56,7 +57,6 @@ define(function(require){
                 }
 
                 function _playerInputSuc(){
-
                 }
 
                 function _playerInputFail(){

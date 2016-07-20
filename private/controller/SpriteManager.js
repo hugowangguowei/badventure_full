@@ -2,11 +2,12 @@
  * Created by wgw on 2016/4/29.
  */
 
-var Bear = require('../script/revengerRoad/chapter_1/sprite/Bear');
-var Knight = require('../script/revengerRoad/chapter_1/sprite/Knight');
-var DarkTower = require('../script/revengerRoad/chapter_1/sprite/DarkTower');
-var Chief = require('../script/revengerRoad/chapter_1/sprite/Chief');
-var Orc = require('../script/revengerRoad/chapter_1/sprite/Orc');
+var Bear = require('../script/revengerRoad/chapter_1/sprite/O_Bear');
+var Knight = require('../script/revengerRoad/chapter_1/sprite/R_Knight');
+var DarkTower = require('../script/revengerRoad/chapter_1/sprite/O_DarkTower');
+var Chief = require('../script/revengerRoad/chapter_1/sprite/O_Chief');
+var Orc = require('../script/revengerRoad/chapter_1/sprite/O_Orc');
+var Captain = require('../script/revengerRoad/chapter_1/sprite/R_Captain');
 
 var instance = null;
 exports.getInstance = function(){
@@ -17,8 +18,8 @@ exports.getInstance = function(){
 }
 
 function SpriteManager(){
-
 }
+
 SpriteManager.prototype ={
     generateSpriteByType:function(type){
         var sprite;
@@ -37,6 +38,9 @@ SpriteManager.prototype ={
                 break;
             case 'chief':
                 sprite = new Chief();
+                break;
+            case 'captain':
+                sprite = new Captain();
                 break;
         }
         return sprite;
@@ -58,6 +62,9 @@ SpriteManager.prototype ={
                 break;
             case 'chief':
                 sprite = new Chief(detail.prop);
+                break;
+            case 'captain':
+                sprite = new Captain(detail.prop);
                 break;
         }
         return sprite;

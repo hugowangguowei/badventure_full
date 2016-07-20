@@ -2,11 +2,12 @@
  * Created by wgw on 2016/4/29.
  */
 define(function (require) {
-    var Bear = require('gameLib/script/revengerRoad/chapter_1/sprite/Bear');
-    var Knight = require('gameLib/script/revengerRoad/chapter_1/sprite/Knight');
-    var DarkTower = require('gameLib/script/revengerRoad/chapter_1/sprite/DarkTower');
-    var Orc = require('gameLib/script/revengerRoad/chapter_1/sprite/Orc');
-    var Chief = require('gameLib/script/revengerRoad/chapter_1/sprite/Chief');
+    var Bear = require('gameLib/script/revengerRoad/chapter_1/sprite/O_Bear');
+    var Knight = require('gameLib/script/revengerRoad/chapter_1/sprite/R_Knight');
+    var DarkTower = require('gameLib/script/revengerRoad/chapter_1/sprite/O_DarkTower');
+    var Orc = require('gameLib/script/revengerRoad/chapter_1/sprite/O_Orc');
+    var Chief = require('gameLib/script/revengerRoad/chapter_1/sprite/O_Chief');
+    var Captain = require('gameLib/script/revengerRoad/chapter_1/sprite/R_Captain')
     var instance = null;
 
     function SpriteManager(){
@@ -34,6 +35,9 @@ define(function (require) {
                     break;
                 case 'chief':
                     sprite = new Chief();
+                    break;
+                case 'captain':
+                    sprite = new Captain();
                     break;
             }
 
@@ -70,6 +74,9 @@ define(function (require) {
                     break;
                 case 'chief':
                     sprite = new Chief(detail.prop);
+                    break;
+                case 'captain':
+                    sprite = new Captain(detail.prop);
                     break;
             };
             return sprite;

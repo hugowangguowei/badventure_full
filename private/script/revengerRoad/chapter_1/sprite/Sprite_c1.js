@@ -73,7 +73,7 @@ function Sprite_c1(prop){
         maxStepLen:3,
         minStepLen:0,
         climbAbility:2,
-        static:true
+        static:true,
     };
     this.attackInfo = {
         stamp:0,
@@ -87,6 +87,14 @@ function Sprite_c1(prop){
         enemy:null,
         aimEmptyInterval:20,
         aimEmptySignal:20
+    };
+    this.strategyInfo = {
+        hasStrategy:false,
+        ability:{range:100,baseUnit:10,maxCtr:5},
+        sList:[],
+        curSt:null,
+        followList:[],
+        curStNum:0
     };
     this.orderInfo = {
         follow:null,
@@ -270,26 +278,30 @@ Sprite_c1.prototype.setAim = function(aimObj){
 Sprite_c1.prototype.moveHandle = function () {
     var self = this;
     var loc = this.loc;
-    var speed = self.moveInfo.stepLength;;
+    var speed = self.moveInfo.stepLength;
+    var oriDir = self.loc.direction;
     var dir = self.loc.direction;
+    var _dis = null,aimLoc;
     if(this.controller){}
     else if(this.orderInfo.follow){
         var followInfo = self.orderInfo.follow;
         var aim = followInfo.aim;//指定的跟随目标
         var aimSpeed = aim.moveInfo.stepLength;//目标的速度
-        var aimLoc = util.getRelativeLoc(aim,{x:followInfo.qx,y:followInfo.qy});
-        var _dis = util.getTwoLocDis(self.loc,aimLoc);
+        aimLoc = util.getRelativeLoc(aim,{x:followInfo.qx,y:followInfo.qy});
+        _dis = util.getTwoLocDis(self.loc,aimLoc);
         dir = self.getDirByAimLoc({x:aimLoc.x,y:aimLoc.y});
+        //速度调整
         if(_dis>15){
             var maxStepL = self.moveInfo.maxStepLen;
             self.moveInfo.stepLength = self.accTo(maxStepL);
         }
         else{
-            //dir = aim.loc.direction;
             self.moveInfo.stepLength = self.accTo(aimSpeed);
         }
     }
     else if(this.orderInfo.toLoc){
+        aimLoc = self.orderInfo.toLoc.loc;
+        _dis = util.getTwoLocDis(self.loc,aimLoc);
         dir = self.getDirByAimLoc(self.orderInfo.toLoc.loc);
     }
     else if(this.orderInfo.toDir){
@@ -300,10 +312,22 @@ Sprite_c1.prototype.moveHandle = function () {
     }
     self.loc.direction = dir;
     //TODO 速度调整暂时不添加
+    var _x,_y;
+    if(_dis!= null &&(_dis <= speed)){
+        self.loc.direction = oriDir;
+        _x = aimLoc.x - loc.x;
+        _y = aimLoc.y - loc.y;
+    }else{
+        _x = speed * Math.cos(dir);
+        _y = speed * Math.sin(dir);
+    }
 
-    loc.x += speed * Math.cos(dir);
-    loc.y += speed * Math.sin(dir);
-
+    //障碍判断
+    if(this.obstacleCheck(_x,_y)){
+        loc.x += _x;
+        loc.y += _y;
+    };
+    //边界判断
     var geoInfo = this.geoInfo.bindGeo;
     if(loc.x <= 0||loc.x >= geoInfo.width){
         loc.direction = Math.PI - loc.direction;
@@ -311,10 +335,46 @@ Sprite_c1.prototype.moveHandle = function () {
     if(loc.y <= 0||loc.y >= geoInfo.height){
         loc.direction = -1*loc.direction;
     }
-
     self.refreshGeo();
-
 };
+//障碍判断
+Sprite_c1.prototype.obstacleCheck = function (_x, _y) {
+    var oL = this.GM.obstacleList;
+    var loc = this.loc;
+    var newLoc = {x:this.loc.x + _x,y:this.loc.y + _y};
+    var obs;
+    var isHalt = false;
+    outerLoop:
+    for(var i = 0;i<oL.length;i++){
+        obs = oL[i];
+        if(obs.type == "line"){
+            var x1 = obs.node[0];
+            var x2 = obs.node[2];
+            var y1 = obs.node[1];
+            var y2 = obs.node[3];
+            var minX = Math.min(x1,x2);
+            var maxX = Math.max(x1,x2);
+            var minY = Math.min(y1,y2);
+            var maxY = Math.max(y1,y2);
+            var isHalt = false;
+            if (Math.max(loc.x,loc.x+_x)<minX){isHalt = true;break outerLoop };
+            if (Math.max(loc.y,loc.y+_y)<minY){isHalt = true;break outerLoop };
+            if (Math.min(loc.x,loc.x+_x)>maxX){isHalt = true;break outerLoop };
+            if (Math.min(loc.y,loc.y+_y)>maxY){isHalt = true;break outerLoop };
+            if (this.mult({x:x1,y:y1},newLoc,loc)*this.mult(newLoc,{x:x2,y:y2},loc)<0){isHalt = true;break outerLoop };
+            if (this.mult(loc,{x:x2,y:y2},{x:x1,y:y1})*this.mult({x:x2,y:y2},newLoc,{x:x1,y:y1})<0){isHalt = true;break outerLoop };
+            return true;
+        }
+    }
+    if(isHalt){
+        console.log("被阻止了哟");
+        return false;
+    }
+    return true;
+}
+Sprite_c1.prototype.mult = function(a,b,c){
+    return (a.x-c.x)*(b.y-c.y)-(b.x-c.x)*(a.y-c.y);
+}
 //获取移动方向
 Sprite_c1.prototype.getMoveDir = function(){
     console.log("getMoveDir");
@@ -427,6 +487,19 @@ Sprite_c1.prototype.died = function(){
     this.propInfo.isDead = true;
     this.GM._testPushDead(this);
     this.GM.removeSprite(this);
+    //如果是跟随者
+    if(this.orderInfo.follow){
+        this.orderInfo.follow.aim.removeFollow(this);
+    }
+    //如果是领导者
+    if(this.strategyInfo.hasStrategy){
+        var fL = this.strategyInfo.followList;
+        var s_i;
+        for(var i = 0,len = fL.length;i<len;i++){
+            s_i = fL[i];
+            s_i.orderInfo.follow = null;
+        }
+    }
     this.GM.fireEvent('removeSprite',this.id);
 };
 /**
@@ -470,6 +543,83 @@ Sprite_c1.prototype.setAttackInterval = function (attResult) {
     var p = self.getAccPercent();
     self.attackInfo.actInterval -= 20*p;
 }
+//战术相关函数===================================================================
+/**
+ * 添加战术
+ * @param strategy
+ */
+Sprite_c1.prototype.addStrategy = function(strategy){
+    var sInfo = this.strategyInfo;
+    if(!this.strategyInfo.hasStrategy)return null;
+    sInfo.sList.unshift(strategy);
+    this.changeStrategy(strategy);
+};
+/**
+ * 更换当前战术
+ */
+Sprite_c1.prototype.changeStrategy = function(strategy){
+    this.strategyInfo.curSt = strategy;
+    this.strategyInfo.curStNum = 0;
+    var f_i;
+    for(var i = 0,len = this.strategyInfo.followList.length;i<len;i++){
+        f_i = this.strategyInfo.followList[i];
+        this.addFollowToSt(f_i);
+    }
+};
+/**
+ * 给当前战术添加追随者
+ * @param follow
+ * @returns {boolean}
+ */
+Sprite_c1.prototype.addFollowToSt = function(follow){
+    var st = this.strategyInfo;
+    if(st.curStNum + 1 > st.curSt.dataInfo.length){
+        follow.orderInfo.follow = null;
+        follow.leader = null;
+        return false;
+    }
+    var dataList = st.curSt.dataInfo;
+    var data_i = dataList[st.curStNum];
+    var followInfo = {
+        aim:this,
+        qx:data_i.x,
+        qy:data_i.y
+    };
+    follow.orderInfo.follow = followInfo;
+    follow.leader = this;
+    st.curStNum++;
+
+    //添加到followList中
+    var isIn = false;
+    outerLoop:
+    for(var i = 0;i<st.followList.length;i++){
+        if(follow == st.followList[i]){
+            isIn = true;
+            break outerLoop;
+        }
+    }
+    if(!isIn){
+        st.followList.push(follow);
+    }
+};
+/**
+ * 移除追随者
+ * @param follow
+ * @returns {boolean}
+ */
+Sprite_c1.prototype.removeFollow = function(follow){
+    var st = this.strategyInfo;
+    var f_i;
+    for(var i = 0,len = st.followList.length;i<len;i++){
+        f_i = st.followList[i];
+        if(f_i == follow){
+            st.followList.splice(i,1);
+            st.curStNum--;
+            return true;
+        }
+    }
+    return false;
+}
 //数据相关函数==========================================================
 /**
  * 获得当前速度与最大速度之比
@@ -495,6 +645,10 @@ Sprite_c1.prototype.getOutPutDetail = function(){
         loc:this.loc,
         //viewData:this.viewData,
         propInfo:this.propInfo,
-        moveInfo:this.moveInfo
+        moveInfo:this.moveInfo,
+        strategyInfo:{
+            hasStrategy:this.strategyInfo.hasStrategy,
+            ability:this.strategyInfo.ability
+        }
     };
-}
+};

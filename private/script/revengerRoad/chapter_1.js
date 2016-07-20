@@ -8,10 +8,10 @@ var mapManager = require('../../controller/MapManager').getInstance();
 
 exports.Map = mapManager.getMap("RR_c1");
 exports.Sprite = {
-    //"leader":{num:1},
-    "chief":{num:1},
-    "darkTower":{num:1},
-    "knight":{num:10},
+    "captain":{num:2},
+    "knight":{num:15},
+    "chief":{num:2},
+    //"darkTower":{num:1},
     "bear":{num:30}
 };
 exports.event = [
@@ -47,4 +47,8 @@ exports.event = [
         }
         return 0;
     }
+];
+exports.obstacle = [
+    {type:"line",node:[100,100,200,200]},
+    {type:"line",node:[100,500,500,100]}
 ];

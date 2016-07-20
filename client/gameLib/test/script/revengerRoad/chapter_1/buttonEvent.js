@@ -16,9 +16,11 @@ function init(){
     $("#t4").hide();
     $("#t5").val("关闭当前游戏");
     $("#t5").hide();
+    $("#t6").hide();
     $("#roomSelect").hide();
     $("#refreshGameList").hide();
     $("#charaSelect").hide();
+    $("#introduce").hide();
 }
 
 function test0(){
@@ -133,6 +135,7 @@ function connectServer_suc(serverInfo){
             $("#t4").show();
         }
     }
+    $("#t6").show();
 }
 
 //更改游戏列表中的可选择职业
@@ -183,6 +186,17 @@ function test4(){
 //关闭一个游戏
 function test5(){
     WSM.webSocket.emit('closeGame');
+}
+
+//查看帮助文档
+function test6(){
+    if($("#introduce").is(':hidden')){
+        $("#introduce").show();
+        $("#t6").val("关闭帮助文档");
+    }else{
+        $("#introduce").hide();
+        $("#t6").val("查看帮助文档");
+    }
 }
 
 //gameInput消息格式示范
