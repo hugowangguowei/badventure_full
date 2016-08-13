@@ -13,6 +13,7 @@ define(function(require){
         this.spriteList = {};
         this.spriteCount = 0;
         this.controlSprite = null;
+        this.obstacleList = null;
         this.timer = {
             timerTask:null,
             frameSpeed:40
@@ -39,6 +40,10 @@ define(function(require){
                 }
             }
         };
+        if(chapterInfo.obstacle){
+            this.obstacleList = chapterInfo.obstacle;
+            this.initObstacle();
+        }
         this.startEngine();
     };
     Game.prototype.startEngine = function(){
@@ -178,5 +183,9 @@ define(function(require){
         }
         return false;
     };
+    //初始化障碍列表
+    Game.prototype.initObstacle = function(){
+
+    }
     return Game;
 });

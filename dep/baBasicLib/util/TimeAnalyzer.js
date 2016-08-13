@@ -1,29 +1,33 @@
-/**
+ï»¿/**
  * Created by wgw on 2016/6/16.
- * Ê±¼ä·ÖÎöÆ÷
+ * Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
  */
 module.exports = TimeAnalyzer;
 
-function TimeAnalyzer (){
+function TimeAnalyzer (outputInterval){
     this.allTime = 0;
     this.avTime = 0;
     this.count = 0;
     this.bT = 0;
     this.eT = 0;
+    this.outputInterval = outputInterval||1;
 }
 
 TimeAnalyzer.prototype = {
-    //ÉèÖÃ¿ªÊ¼Ê±¼ä
+    //ï¿½ï¿½ï¿½Ã¿ï¿½Ê¼Ê±ï¿½ï¿½
     setBeginTime:function(){
         this.bT = new Date().getTime();
     },
-    //ÉèÖÃ½áÊøÊ±¼ä
+    //ï¿½ï¿½ï¿½Ã½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½
     setEndTime:function(){
         this.eT = new Date().getTime();
         var interval = this.eT - this.bT;
         this.allTime += interval;
         this.count++;
         this.avTime = this.allTime/this.count;
-        console.log(this.avTime);
+
+        if(!(this.count%this.outputInterval)){
+            console.log(this.avTime);
+        }
     }
 }

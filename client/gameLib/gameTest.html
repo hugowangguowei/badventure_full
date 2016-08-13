@@ -38,12 +38,11 @@
                         Game,chapter_1,GameView,PropView,
                         RecordView,StrategyManager){
                     gm = new Game();
+                    gm.loadChapter(chapter_1,null,true);
                     var mainCanvas = document.getElementById("mainCanvas");
                     var gameView = new GameView(mainCanvas,gm);
                     var propView = new PropView(null,gm);
                     var recordView = new RecordView(null,gm);
-                    gm.loadChapter(chapter_1,null,true);
-
                     var sDiv = document.getElementById("strategy");
                     var sM = new StrategyManager(sDiv,gm);
         });

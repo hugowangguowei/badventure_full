@@ -14,7 +14,7 @@ var recordManager = require("./controller/RecordManager").getInstance();
 
 module.exports = Game;
 var gameCount = 0;
-var timeAnalyzer = new TimeAnalyzer();
+var timeAnalyzer = new TimeAnalyzer(10);
 
 function Game(initInfo){
     this.id = null;
@@ -130,7 +130,6 @@ Game.prototype.startMachine = function(){
     },this.timer.proFS);
     //数据处理
     this.timer.dataHandle = setInterval(function(){
-
         //单播
         var client_i;
         for(var i = 0;i<self._eventList.length;i++){
@@ -387,6 +386,7 @@ Game.prototype._refreshSprite = function(playerInfo,detail){
     sprite.GMInput(detail);
 };
 Game.prototype._deleteSprite = function(detail){
+
 };
 /**
  * 添加对象

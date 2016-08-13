@@ -14,6 +14,7 @@ define(function(require){
         this.id = getGUID();
         this.div = null;
         this.model = null;
+        this.isObstacleInit = false;
         this.initialize(div,model);
     };
     GameView.prototype = new View();
@@ -39,15 +40,26 @@ define(function(require){
             var spriteList = self.model.spriteList;
             self.drawSpriteList(spriteList,self._spriteCache);
             self.drawQuaTree(geo,self._quaTreeCache);
+            self.drawObs(self._obstacleCache);
             self.draw();
         });
-        GameView.prototype.draw = function(){
-            var cxt = this.div.getContext("2d");
-            cxt.clearRect(0,0,this.div.width,this.div.height);
-            cxt.drawImage(this._spriteCache,0,0,this.div.width,this.div.height);
-            //cxt.drawImage(this._quaTreeCache,0,0,this.div.width,this.div.height);
-        };
+
     };
+    /**
+     * 绘制
+     */
+    GameView.prototype.draw = function(){
+        var cxt = this.div.getContext("2d");
+        cxt.clearRect(0,0,this.div.width,this.div.height);
+        cxt.drawImage(this._spriteCache,0,0,this.div.width,this.div.height);
+        cxt.drawImage(this._obstacleCache,0,0,this.div.width,this.div.height);
+        //cxt.drawImage(this._quaTreeCache,0,0,this.div.width,this.div.height);
+    };
+    /**
+     * 绘制四叉树
+     * @param geo
+     * @param canvas
+     */
     GameView.prototype.drawQuaTree = function (geo,canvas) {
         var cxt = canvas.getContext("2d");
         cxt.clearRect(0,0,canvas.width,canvas.height);
@@ -65,6 +77,11 @@ define(function(require){
             cxt.stroke();
         }
     };
+    /**
+     * 绘制地理信息
+     * @param geo
+     * @param canvas
+     */
     GameView.prototype.drawGeo = function(geo,canvas){
         var dataArray = geo.dataArray;
         var d_w = geo.xNum;
@@ -88,6 +105,11 @@ define(function(require){
             cxt.stroke();
         };
     };
+    /**
+     * 绘制sprite列表
+     * @param spriteList
+     * @param canvas
+     */
     GameView.prototype.drawSpriteList = function(spriteList,canvas){
         var cxt = canvas.getContext("2d");
         cxt.clearRect(0,0,canvas.width,canvas.height);
@@ -97,6 +119,46 @@ define(function(require){
             spriteView.draw(canvas);
         };
     };
+    /**
+     * 绘制障碍层
+     * @param canvas
+     */
+    GameView.prototype.drawObs = function(canvas){
+        if(!this.model.obstacleList)return null;
+        if(this.model.isObstacleInit)return null;
+        var geo = this.model.geoInfo;
+        var obs = this.model.obstacleList;
+        canvas.width = geo.width;
+        canvas.height = geo.height;
+        //console.log(canvas.width);
+        //console.log(canvas.height);
+        var cxt = canvas.getContext("2d");
+        var obs_i;
+        for(var i = 0;i<obs.length;i++){
+            obs_i = obs[i];
+            switch (obs_i.type){
+                case "line":
+                    cxt.beginPath();
+                    cxt.strokeStyle = "blue";
+                    cxt.moveTo(obs_i.node[0],obs_i.node[1]);
+                    cxt.lineTo(obs_i.node[2],obs_i.node[3]);
+                    cxt.stroke();
+                    cxt.closePath();
+                    break;
+                case "cycle":
+                    cxt.beginPath();
+                    cxt.strokeStyle = "blue";
+                    cxt.arc(obs_i.node[0],obs_i.node[1],obs_i.node[2],obs_i.node[3],obs_i.node[4]);
+                    cxt.stroke();
+                    cxt.closePath();
+                    break;
+            }
+        }
+        this.model.isObstacleInit = true;
+    };
+    /**
+     * 添加基本元素
+     */
     GameView.prototype.addBasicStruct = function(){
         var self = this;
         var h = screen.height;
@@ -119,6 +181,10 @@ define(function(require){
         self._quaTreeCache = document.createElement('canvas');
         self._quaTreeCache.width = c_w;
         self._quaTreeCache.height = c_h;
+
+        self._obstacleCache = document.createElement('canvas');
+        self._obstacleCache.width = c_w;
+        self._obstacleCache.height = c_h;
     };
     return GameView;
 })

@@ -98,3 +98,22 @@ exports.getRelativeLoc = function(sprite,loc){
     }
     return newLoc;
 }
+
+//获取相对角度
+exports.getRelativeAngle = function(loc1,loc2){
+    var x = loc2.x - loc1.x;
+    var y = loc2.y - loc1.y;
+    var hypotenuse = Math.sqrt(Math.pow(x, 2)+Math.pow(y, 2));
+    //斜边长度
+    var cos = x/hypotenuse;
+    var radian = Math.acos(cos);
+    //求出弧度
+    var angle = 180/(Math.PI/radian);
+    //用弧度算出角度
+    if (y<0) {
+        radian = -radian;
+    } else if ((y == 0) && (x<0)){
+        radian = Math.PI;
+    }
+    return radian;
+}

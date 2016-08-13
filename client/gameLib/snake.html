@@ -5,7 +5,15 @@
     <title></title>
     <script type="text/javascript" src="../dep/jquery-1.9.1.js"></script>
     <script>
-
+        function generateForm(){
+            var p = document.getElementById("sss");
+            for(var i = 0;i<10;i++){
+                var a = document.createElement("input");
+                a.value = "value" + i;
+                a.name = "name_" + i;
+                p.appendChild(a);
+            }
+        }
         //地图
         var map = [];
         var map_w = 50;
@@ -168,6 +176,9 @@
     </script>
 </head>
 <body onload="init()">
+<div id = "sss"></div>
 <canvas id = "mainCanvas"></canvas>
+
+<input type="button" onclick="generateForm()">
 </body>
 </html>

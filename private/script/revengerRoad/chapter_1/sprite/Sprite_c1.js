@@ -103,11 +103,11 @@ function Sprite_c1(prop){
         rush:null
     };
     this.testSignal = {
-        watch:false
+        watch:false,
+        halt:false
     };
     this.initialize(prop);
 }
-
 Sprite_c1.prototype = new Sprite();
 Sprite_c1.prototype.initialize = function(prop){
     var self = this;
@@ -348,6 +348,7 @@ Sprite_c1.prototype.obstacleCheck = function (_x, _y) {
     for(var i = 0;i<oL.length;i++){
         obs = oL[i];
         if(obs.type == "line"){
+            //如果障碍为线段
             var x1 = obs.node[0];
             var x2 = obs.node[2];
             var y1 = obs.node[1];
@@ -356,22 +357,49 @@ Sprite_c1.prototype.obstacleCheck = function (_x, _y) {
             var maxX = Math.max(x1,x2);
             var minY = Math.min(y1,y2);
             var maxY = Math.max(y1,y2);
-            var isHalt = false;
-            if (Math.max(loc.x,loc.x+_x)<minX){isHalt = true;break outerLoop };
-            if (Math.max(loc.y,loc.y+_y)<minY){isHalt = true;break outerLoop };
-            if (Math.min(loc.x,loc.x+_x)>maxX){isHalt = true;break outerLoop };
-            if (Math.min(loc.y,loc.y+_y)>maxY){isHalt = true;break outerLoop };
-            if (this.mult({x:x1,y:y1},newLoc,loc)*this.mult(newLoc,{x:x2,y:y2},loc)<0){isHalt = true;break outerLoop };
-            if (this.mult(loc,{x:x2,y:y2},{x:x1,y:y1})*this.mult({x:x2,y:y2},newLoc,{x:x1,y:y1})<0){isHalt = true;break outerLoop };
-            return true;
+            //var isHalt = false;
+            if (Math.max(loc.x,loc.x+_x)<minX){continue};
+            if (Math.max(loc.y,loc.y+_y)<minY){continue};
+            if (Math.min(loc.x,loc.x+_x)>maxX){continue};
+            if (Math.min(loc.y,loc.y+_y)>maxY){continue};
+            if (this.mult({x:x1,y:y1},newLoc,loc)*this.mult({x:x2,y:y2},newLoc,loc)>0){continue};
+            if (this.mult(loc,{x:x2,y:y2},{x:x1,y:y1})*this.mult(newLoc,{x:x2,y:y2},{x:x1,y:y1})>0){continue};
+            isHalt = true;
+            break outerLoop;
+        }
+        else if(obs.type == "cycle"){
+            var cX = obs.node[0];
+            var cY = obs.node[1];
+            var r = obs.node[2];
+            var bAngle = obs.node[3];
+            var eAngle = obs.node[4];
+            var dis1 = (cX - loc.x)*(cX - loc.x) + (cY - loc.y)*(cY - loc.y);
+            var dis2 = (cX - newLoc.x)*(cX - newLoc.x) + (cY - newLoc.y)*(cY - newLoc.y);
+            if((dis1 - r*r)*(dis2 - r*r) < 0){
+                var angle = util.getRelativeAngle({x:cX,y:cY},loc);
+                var _angle = eAngle - bAngle;
+                if(_angle < 0)_angle = _angle + Math.PI*2;
+                var a = angle - bAngle;
+                if(a < 0)a = a + Math.PI*2;
+                if(a<_angle){
+                    isHalt = true;
+                    this.testSignal.halt = true;
+                    this.testSignal.haltInfo = {x:loc.x,y:loc.y};
+                    break outerLoop;
+                }
+            }
+            else if(this.testSignal.halt){
+                console.log("sdfg");
+            }
         }
     }
     if(isHalt){
-        console.log("被阻止了哟");
+        //console.log("被阻止了哟");
         return false;
     }
     return true;
 }
+//位置计算
 Sprite_c1.prototype.mult = function(a,b,c){
     return (a.x-c.x)*(b.y-c.y)-(b.x-c.x)*(a.y-c.y);
 }
