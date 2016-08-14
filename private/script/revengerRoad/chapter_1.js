@@ -10,12 +10,11 @@ var obsGenerator = require('../../test/script/revengerRoad/chapter_1/obstacleDat
 exports.Map = mapManager.getMap("RR_c1");
 exports.Sprite = {
     "captain":{num:1},
-    //"knight":{num:15},
-    //"chief":{num:2},
-    ////"darkTower":{num:1},
-    //"bear":{num:30}
+    "knight":{num:15},
+    "chief":{num:2},
+    //"darkTower":{num:1},
+    "bear":{num:30}
 };
-
 exports.event = [
     //function(){
     //    var sprite_i;
@@ -57,13 +56,13 @@ exports.obstacle = [
     {type:"line",node:[610,126,610,245]},
     {type:"line",node:[385,279,461,279]},
     {type:"line",node:[495,279,579,279]},
-    {type:"line",node:[385,115,462,115]},
-    {type:"line",node:[497,115,572,115]},
-    {type:"line",node:[385,115,385,242]},
-    {type:"line",node:[572,115,572,242]},
+    {type:"line",node:[385,125,462,125]},
+    {type:"line",node:[497,125,572,125]},
+    {type:"line",node:[385,125,385,242]},
+    {type:"line",node:[572,125,572,242]},
     {type:"line",node:[385,242,572,242]},
     {type:"cycle",node:[351,92,32,Math.PI*0.5,Math.PI*2]},
-    //{type:"cycle",node:[610,92,32,Math.PI,Math.PI*0.5]},
-    //{type:"cycle",node:[351,276,32,0,Math.PI*1.5]},
-    //{type:"cycle",node:[610,276,32,Math.PI*-0.5,Math.PI]},
+    {type:"cycle",node:[610,92,32,Math.PI,Math.PI*0.5]},
+    {type:"cycle",node:[351,276,32,0,Math.PI*1.5]},
+    {type:"cycle",node:[610,276,32,Math.PI*-0.5,Math.PI]}
 ];

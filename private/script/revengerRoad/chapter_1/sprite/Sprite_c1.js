@@ -389,12 +389,10 @@ Sprite_c1.prototype.obstacleCheck = function (_x, _y) {
                 }
             }
             else if(this.testSignal.halt){
-                console.log("sdfg");
             }
         }
     }
     if(isHalt){
-        //console.log("被阻止了哟");
         return false;
     }
     return true;

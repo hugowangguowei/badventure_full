@@ -4,6 +4,7 @@
 define(function(require){
     var View = require("baBasicLib/view/View");
     var viewConfig = require("geoLib/view/ViewConfig");
+    var wsConfig = require("gameLib/webSocket/WS_Config");
     var listenerType = viewConfig.listenerType;
     var listenerClass = viewConfig.listenerClass;
     var getGUID = require("baBasicLib/util/GUID");
@@ -24,7 +25,7 @@ define(function(require){
         this.addOriListeners();
         this.addBasicStruct();
     };
-    GameView.prototype.addOriListeners = function() {
+    GameView.prototype.addOriListeners = function(){
         var self = this;
         var prop = {
             id: this.id,
@@ -51,8 +52,10 @@ define(function(require){
     GameView.prototype.draw = function(){
         var cxt = this.div.getContext("2d");
         cxt.clearRect(0,0,this.div.width,this.div.height);
+        cxt.drawImage(this._bgPicCache,0,0,this.div.width,this.div.height);
         cxt.drawImage(this._spriteCache,0,0,this.div.width,this.div.height);
         cxt.drawImage(this._obstacleCache,0,0,this.div.width,this.div.height);
+
         //cxt.drawImage(this._quaTreeCache,0,0,this.div.width,this.div.height);
     };
     /**
@@ -130,8 +133,6 @@ define(function(require){
         var obs = this.model.obstacleList;
         canvas.width = geo.width;
         canvas.height = geo.height;
-        //console.log(canvas.width);
-        //console.log(canvas.height);
         var cxt = canvas.getContext("2d");
         var obs_i;
         for(var i = 0;i<obs.length;i++){
@@ -157,12 +158,25 @@ define(function(require){
         this.model.isObstacleInit = true;
     };
     /**
+     * 绘制背景图片
+     */
+    GameView.prototype.drawBgPic = function(canvas){
+        var cxt = canvas.getContext("2d");
+        cxt.clearRect(0,0,canvas.width,canvas.height);
+        var bgImage = new Image();
+        //bgImage.src = wsConfig.WS_URL +"/client/image/c1_map.png";
+        //bgImage.src = "localHost:18080/client/image/DarkTower.png";
+        bgImage.src = "http://badventure.duapp.com/client/image/c1_map.png";
+        bgImage.onload = function(){
+            cxt.drawImage(bgImage,0,0,canvas.width,canvas.height);
+        }
+    };
+    /**
      * 添加基本元素
      */
     GameView.prototype.addBasicStruct = function(){
         var self = this;
         var h = screen.height;
-        //var _h = this.div.offsetTop;
         var c_w = parseInt(h * 0.65);var c_h = parseInt(h * 0.65);
         var canvas = this.div;
         canvas.style.width = c_w + "px";
@@ -185,6 +199,13 @@ define(function(require){
         self._obstacleCache = document.createElement('canvas');
         self._obstacleCache.width = c_w;
         self._obstacleCache.height = c_h;
+
+        self._bgPicCache = document.createElement('canvas');
+        self._bgPicCache.width = c_w;
+        self._bgPicCache.height = c_h;
+        self.drawBgPic(self._bgPicCache);
+
+
     };
     return GameView;
 })
