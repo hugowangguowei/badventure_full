@@ -1,20 +1,20 @@
 /**
- * Created by wgw on 2016/6/9.
+ * Created by wgw on 2016/8/16.
  */
 define(function (require) {
     var Sprite_c1 = require("gameLib/script/revengerRoad/chapter_1/sprite/Sprite_c1");
     var util = require("baBasicLib/util/baLib");
     var GUID = require("baBasicLib/util/GUID");
-    var KnightView = require("gameLib/script/revengerRoad/chapter_1/spriteView/KnightView");
+    var KingView = require("gameLib/script/revengerRoad/chapter_1/spriteView/KingView");
 
-    function Knight(prop){
+    function King(prop){
         Sprite_c1.call(this);
         this.id = GUID();
-        this.type = "knight";
-        this.bindView = new KnightView(this)
+        this.type = "king";
+        this.bindView = new KingView(this)
         this.initialize(prop);
     }
 
-    Knight.prototype = new Sprite_c1();
-    return Knight;
+    King.prototype = new Sprite_c1();
+    return King;
 })

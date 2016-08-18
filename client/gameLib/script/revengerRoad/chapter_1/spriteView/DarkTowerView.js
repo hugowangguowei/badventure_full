@@ -59,14 +59,14 @@ define(function(require){
     BearView.prototype.draw = function(canvas){
         var obj = this.bindModel;
         var loc = obj.loc;
-        //¼ÆËãÎ»ÖÃ
+        //ï¿½ï¿½ï¿½ï¿½Î»ï¿½ï¿½
         var geo = obj.geoInfo.bindGeo;
         var geoW = geo.width , geoH = geo.height;
         var relX = loc.x/geoW , relY = loc.y/geoH;
         var cW = canvas.width , cH = canvas.height;
         var x = relX*cW;
         var y = relY*cH;
-        //¼ÆËã·½Ïò
+        //ï¿½ï¿½ï¿½ã·½ï¿½ï¿½
         var direction = loc.direction;
         var propInfo = obj.propInfo;
         var scale = propInfo.life/propInfo.baseLife * basicScale;
@@ -75,7 +75,7 @@ define(function(require){
         var cxt = canvas.getContext("2d");
         cxt.save();
         cxt.translate(x, y);
-        cxt.rotate(direction);//Ðý×ª47¶È
+        cxt.rotate(direction);//ï¿½ï¿½×ª47ï¿½ï¿½
         cxt.drawImage(BearViewCache,-1*bearWidth/2, -1*bearHeight/2,bearWidth,bearHeight);
         if(obj.testSignal.watch){
             cxt.strokeStyle = "red";
@@ -85,7 +85,7 @@ define(function(require){
         cxt.restore();
 
 
-        //»æÖÆÐ°ÑÛ
+        //ï¿½ï¿½ï¿½ï¿½Ð°ï¿½ï¿½
         var eyeLoc = obj.evilEye.loc;
         var relX = eyeLoc.x/geoW , relY = eyeLoc.y/geoH;
         var cW = canvas.width , cH = canvas.height;

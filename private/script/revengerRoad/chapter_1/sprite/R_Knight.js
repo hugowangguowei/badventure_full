@@ -176,7 +176,7 @@ Knight.prototype.damageCallback = function(info){
     var self = this;
     //负反馈结算（对于骑士来说，是减速）
     var kickBack = info.kickBack;
-    (self.moveInfo.stepLength - 5*kickBack)>0?self.moveInfo.stepLength -=5*kickBack:self.moveInfo.stepLength = 0;
+    self.changeSpeed(-5*kickBack);
     self.speedChanged();
 
     //正反馈结算（对骑士来说，是加血量）

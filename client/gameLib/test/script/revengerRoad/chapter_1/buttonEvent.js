@@ -213,20 +213,33 @@ var msg = {
 $(document).keydown(function(event){
     //console.log(event.keyCode);
     switch (event.keyCode){
+        case 65:
+            WSM.sendMsg("gameInput",{type:"refreshSprite",detail:{type:"turnLeft",detail:""}});
+            break;
+        case 87:
+            WSM.sendMsg("gameInput",{type:"refreshSprite",detail:{type:"acc",detail:""}});
+            break;
+        case 68:
+            WSM.sendMsg("gameInput",{type:"refreshSprite",detail:{type:"turnRight",detail:""}});
+            break;
+        case 83:
+            WSM.sendMsg("gameInput",{type:"refreshSprite",detail:{type:"draw",detail:""}});
+            break;
+
         case 37:
-            //turnLeft
+            //Left
             WSM.sendMsg("gameInput",{type:"refreshSprite",detail:{type:"turnLeft",detail:""}});
             break;
         case 38:
-            //acc
+            //Up
             WSM.sendMsg("gameInput",{type:"refreshSprite",detail:{type:"acc",detail:""}});
             break;
         case 39:
-            //turnRight
+            //Right
             WSM.sendMsg("gameInput",{type:"refreshSprite",detail:{type:"turnRight",detail:""}});
             break;
         case 40:
-            //draw
+            //Down
             WSM.sendMsg("gameInput",{type:"refreshSprite",detail:{type:"draw",detail:""}});
             break;
     }

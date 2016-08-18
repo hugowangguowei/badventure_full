@@ -1,5 +1,5 @@
 /**
- * Created by wgw on 2016/7/15.
+ * Created by wgw on 2016/8/15.
  */
 
 var Sprite = require("./Sprite_c1");
@@ -15,15 +15,15 @@ var defaultGMInput = {
     tR:0.3//右转
 }
 
-module.exports = Captain;
-function Captain(prop){
+module.exports = King;
+function King(prop){
     Sprite.call(this);
     this.id = GUID.getGUID();
-    this.type = "captain";
+    this.type = "king";
     this.camp = "Rohan";
     this.propInfo = {
-        baseLife:20,
-        life:20,
+        baseLife:30,
+        life:30,
         accLength:4,
         accNum:5,
         baseDamage:5,//基础伤害
@@ -44,17 +44,9 @@ function Captain(prop){
         data:[]
     };
     //移动数据
-    this.moveInfo.maxStepLen = 2.5;
-    this.moveInfo.stepLength = 0.2;
-    //战略数据
-    this.strategyInfo.hasStrategy = true;
-    this.strategyInfo.ability = {range:200,baseUnit:10,maxCtr:8};
-    this.strategyInfo.curSt = {
-        range:200,
-        baseUnit:10,
-        dataInfo:[{x:20,y:0}, {x:40,y:0}, {x:0,y:-10}, {x:0,y:10}, {x:0,y:-20}, {x:0,y:20}]
-    }
-    //攻击属性
+    this.moveInfo.maxStepLen = 3;
+    this.moveInfo.stepLength = 0.1;
+
     this.attackInfo = {
         stamp:0,
         baseActInterval:100,
@@ -63,10 +55,19 @@ function Captain(prop){
     this.initialize(prop);
 }
 
-Captain.prototype = new Sprite();
-Captain.prototype.getAim = function(viewObjList){
+King.prototype = new Sprite();
+King.prototype.addToGeo = function (geo) {
+    this.geoInfo.bindGeo = geo;
+    this.geoInfo.bindGeo.addQuaNode(this);
+    var direction = Math.random()*Math.PI*2;
+
+    this.loc.x = 479;
+    this.loc.y = 185;
+    this.loc.direction = direction;
+};
+King.prototype.getAim = function(viewObjList){
     var self = this;
-    var friend = null;
+    var friend = null,friendDis = self.viewInfo.range;
     var enemy = self.aimInfo.enemy,enemyDis = self.viewInfo.range;
     var isEnemyThere = false;
     if(enemy){
@@ -76,7 +77,7 @@ Captain.prototype.getAim = function(viewObjList){
         }else{
             enemy = null;
         }
-    }
+    };
     var len = viewObjList.length;
     if(len){
         for(var i = 0;i<len;i++){
@@ -85,11 +86,11 @@ Captain.prototype.getAim = function(viewObjList){
                 var dis = util.getTwoSpriteDis(sprite_i,self);
                 //判断阵营
                 if(sprite_i.camp == self.camp){
-                    if(sprite_i.type == "knight"&&!sprite_i.leader){
-                        self.addFollowToSt(sprite_i);
+                    if(dis < friendDis){
+                        friend = sprite_i;
+                        friendDis = dis;
                     }
-                }
-                else{
+                }else{
                     if(!isEnemyThere && dis < enemyDis){
                         enemy = sprite_i;
                         enemyDis = dis;
@@ -97,10 +98,10 @@ Captain.prototype.getAim = function(viewObjList){
                 }
             }
         }
-    }
+    };
     return {friend:friend,enemy:enemy};
 };
-Captain.prototype.getMoveDir = function(){
+King.prototype.getMoveDir = function(){
     var self = this;
     if(self.controller){
         return self.loc.direction;
@@ -133,21 +134,21 @@ Captain.prototype.getMoveDir = function(){
     }
     return self.loc.direction;
 };
-Captain.prototype.setAttackInterval = function (attResult) {
+King.prototype.setAttackInterval = function (attResult) {
     var self = this;
     var p = self.getAccPercent();
     self.attackInfo.actInterval -= 20*p;
 };
-Captain.prototype.speedChanged = function(){
+King.prototype.speedChanged = function(){
     var self = this;
     var pI = self.propInfo;
     var percent = self.getAccPercent();
     var p = percent*pI.maxAccDmg;
     self.propInfo.damage = pI.baseDamage + p;
 };
-Captain.prototype.dirChanged = function(){
+King.prototype.dirChanged = function(){
 };
-Captain.prototype.getDamage = function(damageNum){
+King.prototype.getDamage = function(damageNum){
     var self = this;
     var propInfo = self.propInfo;
     var realDamage;
@@ -163,13 +164,11 @@ Captain.prototype.getDamage = function(damageNum){
         return {kickBack:kickBack,honor:0.5};
     }
 };
-Captain.prototype.damageCallback = function(info){
+King.prototype.damageCallback = function(info){
     var self = this;
     //负反馈结算（对于骑士来说，是减速）
     var kickBack = info.kickBack;
-    //console.log("收益" + kickBack);
-    self.changeSpeed(-5*kickBack);
-    //console.log(self.moveInfo.stepLength);
+    this.changeSpeed(-5*kickBack);
     self.speedChanged();
 
     //正反馈结算（对骑士来说，是加血量）

@@ -7,7 +7,11 @@ define(function (require) {
     var DarkTower = require('gameLib/script/revengerRoad/chapter_1/sprite/O_DarkTower');
     var Orc = require('gameLib/script/revengerRoad/chapter_1/sprite/O_Orc');
     var Chief = require('gameLib/script/revengerRoad/chapter_1/sprite/O_Chief');
-    var Captain = require('gameLib/script/revengerRoad/chapter_1/sprite/R_Captain')
+    var Captain = require('gameLib/script/revengerRoad/chapter_1/sprite/R_Captain');
+    var Barracks = require('gameLib/script/revengerRoad/chapter_1/sprite/O_Barracks');
+    var King = require('gameLib/script/revengerRoad/chapter_1/sprite/R_King');
+    var Archer = require('gameLib/script/revengerRoad/chapter_1/sprite/R_Archer');
+
     var instance = null;
 
     function SpriteManager(){
@@ -38,6 +42,15 @@ define(function (require) {
                     break;
                 case 'captain':
                     sprite = new Captain();
+                    break;
+                case 'barracks':
+                    sprite = new Barracks();
+                    break;
+                case 'king':
+                    sprite = new King();
+                    break;
+                case 'archer':
+                    sprite = new Archer();
                     break;
             }
 
@@ -77,6 +90,15 @@ define(function (require) {
                     break;
                 case 'captain':
                     sprite = new Captain(detail.prop);
+                    break;
+                case 'barracks':
+                    sprite = new Barracks(detail.prop);
+                    break;
+                case 'king':
+                    sprite = new King(detail.prop);
+                    break;
+                case 'archer':
+                    sprite = new Archer(detail.prop);
                     break;
             };
             return sprite;

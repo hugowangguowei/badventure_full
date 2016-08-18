@@ -43,7 +43,7 @@ define(function(require){
         if(chapterInfo.obstacle){
             this.obstacleList = chapterInfo.obstacle;
             this.initObstacle();
-        }
+        };
         this.startEngine();
     };
     Game.prototype.startEngine = function(){

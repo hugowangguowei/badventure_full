@@ -1,7 +1,6 @@
 /**
- * Created by wgw on 2016/7/15.
+ * Created by wgw on 2016/8/17.
  */
-
 var Sprite = require("./Sprite_c1");
 var util = require("../../../../../dep/baBasicLib/util/baLib");
 var GUID = require("../../../../../dep/baBasicLib/util/GUID");
@@ -15,11 +14,11 @@ var defaultGMInput = {
     tR:0.3//右转
 }
 
-module.exports = Captain;
-function Captain(prop){
+module.exports = Archer;
+function Archer(prop){
     Sprite.call(this);
     this.id = GUID.getGUID();
-    this.type = "captain";
+    this.type = "archer";
     this.camp = "Rohan";
     this.propInfo = {
         baseLife:20,
@@ -34,6 +33,7 @@ function Captain(prop){
         armor:1,//护甲
         maxKickBack:10,//受到负反馈的最大参考值
         maxHonor:10,//收到正反馈的最大参考值
+        attackState:false,
         isDead:false
     };
     this.viewInfo = {
@@ -44,29 +44,43 @@ function Captain(prop){
         data:[]
     };
     //移动数据
-    this.moveInfo.maxStepLen = 2.5;
-    this.moveInfo.stepLength = 0.2;
-    //战略数据
-    this.strategyInfo.hasStrategy = true;
-    this.strategyInfo.ability = {range:200,baseUnit:10,maxCtr:8};
-    this.strategyInfo.curSt = {
-        range:200,
-        baseUnit:10,
-        dataInfo:[{x:20,y:0}, {x:40,y:0}, {x:0,y:-10}, {x:0,y:10}, {x:0,y:-20}, {x:0,y:20}]
-    }
-    //攻击属性
+    this.moveInfo.maxStepLen = 3;
+    this.moveInfo.stepLength = 0.1;
+
     this.attackInfo = {
         stamp:0,
         baseActInterval:100,
         actInterval:100
     };
+    this.attackDis = {
+        min:30,
+        max:50,
+        range:Math.PI*0.25
+    }
     this.initialize(prop);
 }
 
-Captain.prototype = new Sprite();
-Captain.prototype.getAim = function(viewObjList){
+Archer.prototype = new Sprite();
+Archer.prototype.addToGeo = function (geo) {
+    this.geoInfo.bindGeo = geo;
+    this.geoInfo.bindGeo.addQuaNode(this);
+    var width = geo.width;
+    var height = geo.height;
+    var base_x = width*0.2;
+    var base_y = height*0.2;
+    var ran_x = width*0.1;
+    var ran_y = height*0.05;
+    var loc_x = base_x + parseInt(Math.random()*ran_x);
+    var loc_y = base_y + parseInt(Math.random()*ran_y);
+    var direction = Math.random()*Math.PI*2;
+
+    this.loc.x = loc_x;
+    this.loc.y = loc_y;
+    this.loc.direction = direction;
+};
+Archer.prototype.getAim = function(viewObjList){
     var self = this;
-    var friend = null;
+    var friend = null,friendDis = self.viewInfo.range;
     var enemy = self.aimInfo.enemy,enemyDis = self.viewInfo.range;
     var isEnemyThere = false;
     if(enemy){
@@ -76,7 +90,7 @@ Captain.prototype.getAim = function(viewObjList){
         }else{
             enemy = null;
         }
-    }
+    };
     var len = viewObjList.length;
     if(len){
         for(var i = 0;i<len;i++){
@@ -85,11 +99,11 @@ Captain.prototype.getAim = function(viewObjList){
                 var dis = util.getTwoSpriteDis(sprite_i,self);
                 //判断阵营
                 if(sprite_i.camp == self.camp){
-                    if(sprite_i.type == "knight"&&!sprite_i.leader){
-                        self.addFollowToSt(sprite_i);
+                    if(dis < friendDis){
+                        friend = sprite_i;
+                        friendDis = dis;
                     }
-                }
-                else{
+                }else{
                     if(!isEnemyThere && dis < enemyDis){
                         enemy = sprite_i;
                         enemyDis = dis;
@@ -97,10 +111,10 @@ Captain.prototype.getAim = function(viewObjList){
                 }
             }
         }
-    }
+    };
     return {friend:friend,enemy:enemy};
 };
-Captain.prototype.getMoveDir = function(){
+Archer.prototype.getMoveDir = function(){
     var self = this;
     if(self.controller){
         return self.loc.direction;
@@ -133,21 +147,21 @@ Captain.prototype.getMoveDir = function(){
     }
     return self.loc.direction;
 };
-Captain.prototype.setAttackInterval = function (attResult) {
+Archer.prototype.setAttackInterval = function (attResult) {
     var self = this;
     var p = self.getAccPercent();
     self.attackInfo.actInterval -= 20*p;
 };
-Captain.prototype.speedChanged = function(){
+Archer.prototype.speedChanged = function(){
     var self = this;
     var pI = self.propInfo;
     var percent = self.getAccPercent();
     var p = percent*pI.maxAccDmg;
     self.propInfo.damage = pI.baseDamage + p;
 };
-Captain.prototype.dirChanged = function(){
+Archer.prototype.dirChanged = function(){
 };
-Captain.prototype.getDamage = function(damageNum){
+Archer.prototype.getDamage = function(damageNum){
     var self = this;
     var propInfo = self.propInfo;
     var realDamage;
@@ -158,23 +172,34 @@ Captain.prototype.getDamage = function(damageNum){
     kickBack > 1?kickBack = 1:kickBack;
     if(propInfo.life > 0){
         return {kickBack:kickBack,honor:0};
-    }else{
+    }
+    else{
         self.died();
         return {kickBack:kickBack,honor:0.5};
     }
 };
-Captain.prototype.damageCallback = function(info){
+Archer.prototype.damageCallback = function(info){
     var self = this;
     //负反馈结算（对于骑士来说，是减速）
     var kickBack = info.kickBack;
-    //console.log("收益" + kickBack);
-    self.changeSpeed(-5*kickBack);
-    //console.log(self.moveInfo.stepLength);
+    this.changeSpeed(-5*kickBack);
     self.speedChanged();
-
     //正反馈结算（对骑士来说，是加血量）
     var honor = info.honor;
     self.propInfo.life += honor*20;
     self.propInfo.baseDamage += honor*10;
     self.recordInfo.totalScore += honor;
 };
+Archer.prototype.getOutPutDetail = function(){
+    return{
+        id:this.id,
+        loc:this.loc,
+        propInfo:this.propInfo,
+        moveInfo:this.moveInfo,
+        strategyInfo:{
+            hasStrategy:this.strategyInfo.hasStrategy,
+            ability:this.strategyInfo.ability
+        },
+        attackDis:this.attackDis
+    };
+}

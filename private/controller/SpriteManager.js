@@ -7,7 +7,10 @@ var Knight = require('../script/revengerRoad/chapter_1/sprite/R_Knight');
 var DarkTower = require('../script/revengerRoad/chapter_1/sprite/O_DarkTower');
 var Chief = require('../script/revengerRoad/chapter_1/sprite/O_Chief');
 var Orc = require('../script/revengerRoad/chapter_1/sprite/O_Orc');
+var Barracks = require('../script/revengerRoad/chapter_1/sprite/O_Barracks');
 var Captain = require('../script/revengerRoad/chapter_1/sprite/R_Captain');
+var King = require('../script/revengerRoad/chapter_1/sprite/R_King');
+var Archer = require('../script/revengerRoad/chapter_1/sprite/R_Archer');
 
 var instance = null;
 exports.getInstance = function(){
@@ -42,6 +45,15 @@ SpriteManager.prototype ={
             case 'captain':
                 sprite = new Captain();
                 break;
+            case 'barracks':
+                sprite = new Barracks();
+                break;
+            case 'king':
+                sprite = new King();
+                break;
+            case 'archer':
+                sprite = new Archer();
+                break;
         }
         return sprite;
     },
@@ -65,6 +77,15 @@ SpriteManager.prototype ={
                 break;
             case 'captain':
                 sprite = new Captain(detail.prop);
+                break;
+            case 'barracks':
+                sprite = new Barracks(detail.prop);
+                break;
+            case 'king':
+                sprite = new King(detail.prop);
+                break;
+            case 'archer':
+                sprite = new Archer(detail.prop);
                 break;
         }
         return sprite;

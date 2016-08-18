@@ -11,9 +11,12 @@ define(function(require){
         Sprite:{
             "captain":{num:1},
             "knight":{num:15},
+            "king":{num:1},
             "chief":{num:2},
+            "barracks":{num:1},
             //"darkTower":{num:1},
-            "bear":{num:30}
+            "bear":{num:5},
+            "archer":{num:2}
         },
         //obstacle:obsData(100)
         obstacle:[

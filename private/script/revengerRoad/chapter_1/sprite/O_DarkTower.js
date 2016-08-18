@@ -295,7 +295,7 @@ DarkTower.prototype.getDamage = function(damageNum){
 DarkTower.prototype.damageCallback = function(info){
     var self = this;
     var kickBack = info.kickBack;
-    (self.moveInfo.stepLength - 5*kickBack)>0?self.moveInfo.stepLength -=5*kickBack:self.moveInfo.stepLength = 0;
+    this.changeSpeed(-5*kickBack);
     self.speedChanged();
     var honor = info.honor;
     self.propInfo.life += honor*20;

@@ -24,6 +24,7 @@ function Sprite_c1(prop){
     this.AI = true;
     this.GM = null;
     this.leader = null;//指挥官
+    this.controllable = true;
     this.controller = null;
     this.recordInfo = {
         totalScore:0
@@ -115,6 +116,27 @@ Sprite_c1.prototype.initialize = function(prop){
         self[i] = prop[i];
     }
 };
+//属性控制=============================================================
+Sprite_c1.prototype.changeLoc = function(_x,_y){
+    this.loc.x += _x;
+    this.loc.y += _y;
+};
+Sprite_c1.prototype.changeSpeed = function(_speed){
+    var self = this;
+    if(_speed <=0){
+        if(self.moveInfo.stepLength + _speed > 0){
+            self.moveInfo.stepLength += _speed;
+        }else{
+            self.moveInfo.stepLength = 0;
+        }
+    }else{
+        if(self.moveInfo.stepLength + _speed <= self.moveInfo.maxStepLen){
+            self.moveInfo.stepLength += _speed;
+        }else{
+            self.moveInfo.stepLength = self.moveInfo.maxStepLen;
+        }
+    }
+};
 Sprite_c1.prototype.addToGeo = function(geo){
     this.geoInfo.bindGeo = geo;
     this.geoInfo.bindGeo.addQuaNode(this);
@@ -165,14 +187,16 @@ Sprite_c1.prototype._upButton = function () {
     var self = this;
     var dI = defaultGMInput;
     var mI = self.moveInfo;
-    self.moveInfo.stepLength+dI.acc<=mI.maxStepLen?self.moveInfo.stepLength += dI.acc:self.moveInfo.stepLength = mI.maxStepLen;
+    self.changeSpeed(dI.acc);
+    //self.moveInfo.stepLength+dI.acc<=mI.maxStepLen?self.moveInfo.stepLength += dI.acc:self.moveInfo.stepLength = mI.maxStepLen;
     self.speedChanged();
 };
 Sprite_c1.prototype._downButton = function () {
     var self = this;
     var dI = defaultGMInput;
     var mI = self.moveInfo;
-    self.moveInfo.stepLength-dI.draw>=0?self.moveInfo.stepLength -= dI.draw:self.moveInfo.stepLength = 0;
+    self.changeSpeed(-1*dI.draw);
+    //self.moveInfo.stepLength-dI.draw>=0?self.moveInfo.stepLength -= dI.draw:self.moveInfo.stepLength = 0;
     self.speedChanged();
 };
 Sprite_c1.prototype._leftButton = function(){
@@ -293,10 +317,18 @@ Sprite_c1.prototype.moveHandle = function () {
         //速度调整
         if(_dis>15){
             var maxStepL = self.moveInfo.maxStepLen;
-            self.moveInfo.stepLength = self.accTo(maxStepL);
+            var _x = self.accTo(maxStepL) - self.moveInfo.stepLength;
+            if(_x != 0){
+                self.changeSpeed(_x);
+            }
+            //self.moveInfo.stepLength = self.accTo(maxStepL);
         }
         else{
-            self.moveInfo.stepLength = self.accTo(aimSpeed);
+            var _x = self.accTo(aimSpeed) - self.moveInfo.stepLength;
+            if(_x != 0){
+                self.changeSpeed(_x);
+            }
+            //self.moveInfo.stepLength = self.accTo(aimSpeed);
         }
     }
     else if(this.orderInfo.toLoc){
@@ -317,15 +349,14 @@ Sprite_c1.prototype.moveHandle = function () {
         self.loc.direction = oriDir;
         _x = aimLoc.x - loc.x;
         _y = aimLoc.y - loc.y;
-    }else{
+    }
+    else{
         _x = speed * Math.cos(dir);
         _y = speed * Math.sin(dir);
     }
-
     //障碍判断
     if(this.obstacleCheck(_x,_y)){
-        loc.x += _x;
-        loc.y += _y;
+        this.changeLoc(_x,_y);
     };
     //边界判断
     var geoInfo = this.geoInfo.bindGeo;
@@ -396,7 +427,7 @@ Sprite_c1.prototype.obstacleCheck = function (_x, _y) {
         return false;
     }
     return true;
-}
+};
 //位置计算
 Sprite_c1.prototype.mult = function(a,b,c){
     return (a.x-c.x)*(b.y-c.y)-(b.x-c.x)*(a.y-c.y);
@@ -463,11 +494,12 @@ Sprite_c1.prototype.accTo = function(speed){
             curSpeed = speed;
         };
         if(curSpeed < 0){
+            curSpeed = 0;
             console.log("hh");
         }
         return curSpeed;
     }
-}
+};
 //动作函数（攻击）======================================================
 Sprite_c1.prototype.attackHandle = function(){
     var self = this;
