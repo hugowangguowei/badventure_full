@@ -17,7 +17,7 @@ define(function(require){
             cxt.font = "15px Arial"
             cxt.textAlign = "center";
             cxt.fillText(name,loc.x,loc.y-10,50);
-        }
+        },
     }
     return SpriteView_c1;
 })

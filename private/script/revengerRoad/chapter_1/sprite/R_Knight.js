@@ -147,14 +147,12 @@ Knight.prototype.setAttackInterval = function (attResult) {
     var p = self.getAccPercent();
     self.attackInfo.actInterval -= 20*p;
 };
-Knight.prototype.speedChanged = function(){
+Knight.prototype.changeSpeedFunc = function(){
     var self = this;
     var pI = self.propInfo;
     var percent = self.getAccPercent();
     var p = percent*pI.maxAccDmg;
     self.propInfo.damage = pI.baseDamage + p;
-};
-Knight.prototype.dirChanged = function(){
 };
 Knight.prototype.getDamage = function(damageNum){
     var self = this;
@@ -177,7 +175,6 @@ Knight.prototype.damageCallback = function(info){
     //负反馈结算（对于骑士来说，是减速）
     var kickBack = info.kickBack;
     self.changeSpeed(-5*kickBack);
-    self.speedChanged();
 
     //正反馈结算（对骑士来说，是加血量）
     var honor = info.honor;

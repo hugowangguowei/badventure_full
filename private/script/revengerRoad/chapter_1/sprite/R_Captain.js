@@ -64,6 +64,13 @@ function Captain(prop){
 }
 
 Captain.prototype = new Sprite();
+Captain.prototype.changeSpeedFunc = function(_speed){
+    var self = this;
+    var pI = self.propInfo;
+    var percent = self.getAccPercent();
+    var p = percent*pI.maxAccDmg;
+    self.propInfo.damage = pI.baseDamage + p;
+};
 Captain.prototype.getAim = function(viewObjList){
     var self = this;
     var friend = null;
@@ -138,15 +145,6 @@ Captain.prototype.setAttackInterval = function (attResult) {
     var p = self.getAccPercent();
     self.attackInfo.actInterval -= 20*p;
 };
-Captain.prototype.speedChanged = function(){
-    var self = this;
-    var pI = self.propInfo;
-    var percent = self.getAccPercent();
-    var p = percent*pI.maxAccDmg;
-    self.propInfo.damage = pI.baseDamage + p;
-};
-Captain.prototype.dirChanged = function(){
-};
 Captain.prototype.getDamage = function(damageNum){
     var self = this;
     var propInfo = self.propInfo;
@@ -167,11 +165,7 @@ Captain.prototype.damageCallback = function(info){
     var self = this;
     //负反馈结算（对于骑士来说，是减速）
     var kickBack = info.kickBack;
-    //console.log("收益" + kickBack);
     self.changeSpeed(-5*kickBack);
-    //console.log(self.moveInfo.stepLength);
-    self.speedChanged();
-
     //正反馈结算（对骑士来说，是加血量）
     var honor = info.honor;
     self.propInfo.life += honor*20;

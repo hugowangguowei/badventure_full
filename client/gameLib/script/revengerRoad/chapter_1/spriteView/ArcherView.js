@@ -35,6 +35,7 @@ define(function(require){
         var geoW = geo.width , geoH = geo.height;
         var relX = loc.x/geoW , relY = loc.y/geoH;
         var cW = canvas.width , cH = canvas.height;
+        var transRateX = cW/geoW,transRateY = cH/geoH;
         var x = relX*cW;
         var y = relY*cH;
         //计算方向
@@ -50,11 +51,34 @@ define(function(require){
         cxt.rotate(direction);//旋转47度?
         cxt.drawImage(ViewCache,-1*bearWidth/2, -1*bearHeight/2,bearWidth,bearHeight);
         if(obj.testSignal.watch){
+            cxt.beginPath();
             cxt.strokeStyle = "red";
             cxt.strokeRect(-1*bearWidth/2 - 2, -1*bearHeight/2 - 1,bearWidth + 4,bearHeight + 2);
+            cxt.closePath();
             cxt.stroke();
+            if(obj.attackDis&&obj.propInfo.attackState){
+                var aD = obj.attackDis;
+                cxt.strokeStyle = "red";
+                cxt.beginPath();
+                cxt.arc(0,0,aD.min*transRateX,0 - aD.range/2,0 + aD.range/2,false);
+                cxt.arc(0,0,aD.max*transRateX,0 + aD.range/2,0 - aD.range/2,true);
+                cxt.closePath();
+                cxt.stroke();
+            };
         }
         cxt.restore();
+
+        if(obj.attackDis&&obj.propInfo.attackState){
+            var qt =obj.attackDis.quaTreeRange;
+            if(qt){
+                cxt.beginPath;
+                cxt.strokeRect(qt.x*transRateX,qt.y*transRateY,qt.w*transRateX,qt.h*transRateY);
+                cxt.closePath();
+                cxt.stroke;
+            }
+
+        };
+
 
         this.drawName(canvas,{x:x,y:y});
     };

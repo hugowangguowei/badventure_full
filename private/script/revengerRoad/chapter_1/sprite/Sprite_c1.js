@@ -120,6 +120,9 @@ Sprite_c1.prototype.initialize = function(prop){
 Sprite_c1.prototype.changeLoc = function(_x,_y){
     this.loc.x += _x;
     this.loc.y += _y;
+    this.changeLocFunc();
+};
+Sprite_c1.prototype.changeLocFunc = function(){
 };
 Sprite_c1.prototype.changeSpeed = function(_speed){
     var self = this;
@@ -129,14 +132,26 @@ Sprite_c1.prototype.changeSpeed = function(_speed){
         }else{
             self.moveInfo.stepLength = 0;
         }
-    }else{
+    }
+    else{
         if(self.moveInfo.stepLength + _speed <= self.moveInfo.maxStepLen){
             self.moveInfo.stepLength += _speed;
         }else{
             self.moveInfo.stepLength = self.moveInfo.maxStepLen;
         }
     }
+
+    self.changeSpeedFunc();
 };
+Sprite_c1.prototype.changeSpeedFunc = function(){
+};
+Sprite_c1.prototype.changeDir = function(){
+
+};
+Sprite_c1.prototype.changeDirFunc = function(){
+
+};
+
 Sprite_c1.prototype.addToGeo = function(geo){
     this.geoInfo.bindGeo = geo;
     this.geoInfo.bindGeo.addQuaNode(this);
@@ -188,16 +203,12 @@ Sprite_c1.prototype._upButton = function () {
     var dI = defaultGMInput;
     var mI = self.moveInfo;
     self.changeSpeed(dI.acc);
-    //self.moveInfo.stepLength+dI.acc<=mI.maxStepLen?self.moveInfo.stepLength += dI.acc:self.moveInfo.stepLength = mI.maxStepLen;
-    self.speedChanged();
 };
 Sprite_c1.prototype._downButton = function () {
     var self = this;
     var dI = defaultGMInput;
     var mI = self.moveInfo;
     self.changeSpeed(-1*dI.draw);
-    //self.moveInfo.stepLength-dI.draw>=0?self.moveInfo.stepLength -= dI.draw:self.moveInfo.stepLength = 0;
-    self.speedChanged();
 };
 Sprite_c1.prototype._leftButton = function(){
     var self = this;
@@ -214,14 +225,6 @@ Sprite_c1.prototype._rightButton = function(){
     var mI = self.moveInfo;
     self.loc.direction += dI.tR;
     self.loc.direction = self.loc.direction%(2*PI);
-};
-//当对象的速度发生改变时的响应函数
-Sprite_c1.prototype.speedChanged = function(){
-    console.log("speedChanged");
-};
-//当对象的方向发生改变时的响应函数
-Sprite_c1.prototype.dirChanged = function(){
-
 };
 //行动
 Sprite_c1.prototype.action = function(){
@@ -505,7 +508,7 @@ Sprite_c1.prototype.attackHandle = function(){
     var self = this;
     var aimInfo = self.aimInfo;
     //如果有可攻击的目标（三项判断）
-    if(aimInfo.enemy&&aimInfo.enemy.isReachable(this)&&!aimInfo.enemy.isDead()){
+    if(aimInfo.enemy&&self.isReachable(aimInfo.enemy)&&!aimInfo.enemy.isDead()){
         var damageCount = self.propInfo.damage;
         var damageResult = aimInfo.enemy.getDamage(damageCount);
         self.damageCallback(damageResult);
@@ -586,7 +589,7 @@ Sprite_c1.prototype.isDead = function(){
 Sprite_c1.prototype.isReachable = function(aimObj){
     var loc_1 = this.loc;
     var loc_2 = aimObj.loc;
-    var aR = aimObj.propInfo.attackRange||2;
+    var aR = this.propInfo.attackRange||2;
     var dis2 = Math.pow((loc_1.x - loc_2.x),2) + Math.pow((loc_1.y - loc_2.y),2);
     if(dis2 <= aR * aR)
         return true;

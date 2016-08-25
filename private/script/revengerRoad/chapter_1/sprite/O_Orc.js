@@ -97,7 +97,7 @@ Orc.prototype.getMoveDir = function () {
     }
     return self.loc.direction;
 };
-Orc.prototype.speedChanged = function(){
+Orc.prototype.changeSpeedFunc = function(){
     var self = this;
     var pI = self.propInfo;
     var percent = self.getAccPercent();

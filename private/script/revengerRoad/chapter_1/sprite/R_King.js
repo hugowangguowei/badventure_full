@@ -139,14 +139,12 @@ King.prototype.setAttackInterval = function (attResult) {
     var p = self.getAccPercent();
     self.attackInfo.actInterval -= 20*p;
 };
-King.prototype.speedChanged = function(){
+King.prototype.changeSpeedFunc = function(){
     var self = this;
     var pI = self.propInfo;
     var percent = self.getAccPercent();
     var p = percent*pI.maxAccDmg;
     self.propInfo.damage = pI.baseDamage + p;
-};
-King.prototype.dirChanged = function(){
 };
 King.prototype.getDamage = function(damageNum){
     var self = this;
@@ -169,7 +167,6 @@ King.prototype.damageCallback = function(info){
     //负反馈结算（对于骑士来说，是减速）
     var kickBack = info.kickBack;
     this.changeSpeed(-5*kickBack);
-    self.speedChanged();
 
     //正反馈结算（对骑士来说，是加血量）
     var honor = info.honor;

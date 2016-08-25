@@ -267,14 +267,12 @@ DarkTower.prototype.setAttackInterval = function (attResult) {
     var p = self.getAccPercent();
     self.attackInfo.actInterval -= 20*p;
 };
-DarkTower.prototype.speedChanged = function(){
+DarkTower.prototype.changeSpeedFunc = function(){
     var self = this;
     var pI = self.propInfo;
     var percent = self.getAccPercent();
     var p = percent*pI.maxAccDmg;
     self.propInfo.damage = pI.baseDamage + p;
-};
-DarkTower.prototype.dirChanged = function(){
 };
 DarkTower.prototype.getDamage = function(damageNum){
     var self = this;
@@ -296,7 +294,6 @@ DarkTower.prototype.damageCallback = function(info){
     var self = this;
     var kickBack = info.kickBack;
     this.changeSpeed(-5*kickBack);
-    self.speedChanged();
     var honor = info.honor;
     self.propInfo.life += honor*20;
     self.propInfo.baseDamage += honor*10;

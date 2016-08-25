@@ -269,9 +269,8 @@
             }
             return infoList;
         },
-
         /**
-         * 根据位置获取响应的子节点
+         * 根据位置获取相应的子节点
          * @param loc
          * @returns {*}
          */

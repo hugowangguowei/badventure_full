@@ -9,14 +9,16 @@ define(function(require){
     return{
         Map:mapManager.getMap("RR_c1"),
         Sprite:{
+            "archer":{num:1},
             "captain":{num:1},
             "knight":{num:15},
             "king":{num:1},
             "chief":{num:2},
             "barracks":{num:1},
             //"darkTower":{num:1},
-            "bear":{num:5},
-            "archer":{num:2}
+
+            "bear":{num:15}
+
         },
         //obstacle:obsData(100)
         obstacle:[

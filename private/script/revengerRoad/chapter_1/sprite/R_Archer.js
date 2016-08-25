@@ -25,9 +25,8 @@ function Archer(prop){
         life:20,
         accLength:4,
         accNum:5,
-        baseDamage:5,//基础伤害
-        maxAccDmg:15,//通过速度获得的最大伤害
-        damage:5,//伤害
+        baseDamage:10,//基础伤害
+        damage:10,//伤害
         attackRange:5,//攻击距离
         baseArmor:1,//基础护甲
         armor:1,//护甲
@@ -53,10 +52,12 @@ function Archer(prop){
         actInterval:100
     };
     this.attackDis = {
-        min:30,
-        max:50,
-        range:Math.PI*0.25
+        min:70,
+        max:95,
+        range:Math.PI*0.3,
+        quaTreeRange:null
     }
+
     this.initialize(prop);
 }
 
@@ -72,53 +73,71 @@ Archer.prototype.addToGeo = function (geo) {
     var ran_y = height*0.05;
     var loc_x = base_x + parseInt(Math.random()*ran_x);
     var loc_y = base_y + parseInt(Math.random()*ran_y);
+    //var loc_x = 100;
     var direction = Math.random()*Math.PI*2;
 
     this.loc.x = loc_x;
     this.loc.y = loc_y;
     this.loc.direction = direction;
 };
-Archer.prototype.getAim = function(viewObjList){
+Archer.prototype.viewHandle = function(){
+    var aimInfo = this.getAim();
+    this.aimInfo.friend = aimInfo.friend;
+    this.aimInfo.enemy = aimInfo.enemy;
+};
+Archer.prototype.getAim = function(){
     var self = this;
-    var friend = null,friendDis = self.viewInfo.range;
-    var enemy = self.aimInfo.enemy,enemyDis = self.viewInfo.range;
-    var isEnemyThere = false;
-    if(enemy){
-        if(!enemy.isDead){
-            var dis = util.getTwoSpriteDis(enemy,self);
-            if(dis < self.viewInfo.range)isEnemyThere = true;
-        }else{
-            enemy = null;
-        }
-    };
-    var len = viewObjList.length;
-    if(len){
-        for(var i = 0;i<len;i++){
-            var sprite_i = viewObjList[i];
-            if(sprite_i != self){
-                var dis = util.getTwoSpriteDis(sprite_i,self);
-                //判断阵营
-                if(sprite_i.camp == self.camp){
-                    if(dis < friendDis){
-                        friend = sprite_i;
-                        friendDis = dis;
-                    }
-                }else{
-                    if(!isEnemyThere && dis < enemyDis){
-                        enemy = sprite_i;
-                        enemyDis = dis;
-                    }
-                }
-            }
-        }
-    };
+    var friend = null;
+    var enemy = null;
+    if(this.propInfo.attackState){
+        enemy = this.getShot();
+    }
     return {friend:friend,enemy:enemy};
+};
+Archer.prototype.getShot = function(){
+    var self = this;
+    var aD = this.attackDis;
+    var d = (aD.max + aD.min)/2;
+    var shotLoc = {x:0,y:0};
+    shotLoc.x = this.loc.x + Math.cos(this.loc.direction)*d;
+    shotLoc.y = this.loc.y + Math.sin(this.loc.direction)*d;
+
+    var quaNode = this.geoInfo.bindGeo.quaTree.getNodeByLoc(shotLoc);
+    if(!quaNode)return null;
+    var aimList = quaNode.spriteList;
+    this.attackDis.quaTreeRange = quaNode.bounds;
+    var aim_i = null;
+    for(var i = 0;i< aimList.length;i++){
+        aim_i = aimList[i];
+        if(this.isObjCanBeShot(aim_i)&&this.isObjInRange(aim_i))return aim_i;
+    }
+    return null;
+};
+Archer.prototype.isObjCanBeShot = function(aim){
+    if(aim.camp == "Orc")return true;
+    return false;
+};
+Archer.prototype.isReachable = function(aim){
+    if(this.isObjInRange(aim))return true;
+    return false;
+};
+Archer.prototype.isObjInRange = function(obj){
+    var ad = this.attackDis;
+    var dis = util.getTwoSpriteDis(this,obj);
+    if(ad.min > dis || ad.max < dis)return false;
+    var angle = util.getRelativeAngle(this.loc,obj.loc);
+    //if(Math.abs(this.loc.direction - angle)>ad.range/2)return false;
+    if(util.getIncludedAngle(this.loc.direction,angle)>ad.range/2)return false;
+    return true;
 };
 Archer.prototype.getMoveDir = function(){
     var self = this;
     if(self.controller){
         return self.loc.direction;
-    }
+    };
+    if(self.propInfo.attackState){
+        return self.loc.direction;
+    };
     var loc = self.loc;
     var curDir = self.loc.direction;
     var dir = curDir;
@@ -152,14 +171,12 @@ Archer.prototype.setAttackInterval = function (attResult) {
     var p = self.getAccPercent();
     self.attackInfo.actInterval -= 20*p;
 };
-Archer.prototype.speedChanged = function(){
-    var self = this;
-    var pI = self.propInfo;
-    var percent = self.getAccPercent();
-    var p = percent*pI.maxAccDmg;
-    self.propInfo.damage = pI.baseDamage + p;
-};
-Archer.prototype.dirChanged = function(){
+Archer.prototype.changeSpeedFunc = function(){
+    if(this.moveInfo.stepLength == 0){
+        this.propInfo.attackState = true;
+    }else{
+        this.propInfo.attackState = false;
+    }
 };
 Archer.prototype.getDamage = function(damageNum){
     var self = this;
@@ -180,11 +197,8 @@ Archer.prototype.getDamage = function(damageNum){
 };
 Archer.prototype.damageCallback = function(info){
     var self = this;
-    //负反馈结算（对于骑士来说，是减速）
     var kickBack = info.kickBack;
     this.changeSpeed(-5*kickBack);
-    self.speedChanged();
-    //正反馈结算（对骑士来说，是加血量）
     var honor = info.honor;
     self.propInfo.life += honor*20;
     self.propInfo.baseDamage += honor*10;
@@ -202,4 +216,4 @@ Archer.prototype.getOutPutDetail = function(){
         },
         attackDis:this.attackDis
     };
-}
+};

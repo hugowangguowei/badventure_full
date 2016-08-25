@@ -137,7 +137,7 @@ Bear.prototype.getMoveDir = function () {
     }
     return self.loc.direction;
 };
-Bear.prototype.speedChanged = function(){
+Bear.prototype.changeSpeedFunc = function(){
     var self = this;
     var pI = self.propInfo;
     var percent = self.getAccPercent();

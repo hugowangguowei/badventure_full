@@ -27,15 +27,18 @@ define(function(require){
     };
     GameView.prototype.addOriListeners = function(){
         var self = this;
+
         var prop = {
             id: this.id,
             class: "ori"
         };
+
         this.model.addListener("geoChange",prop,function(){
             var geo = self.model.geoInfo;
             self.drawGeo(geo,self._geoCache);
             self.draw();
         });
+
         this.model.addListener("spriteChange", prop, function (arg) {
             var geo = self.model.geoInfo;
             var spriteList = self.model.spriteList;
@@ -44,7 +47,6 @@ define(function(require){
             self.drawObs(self._obstacleCache);
             self.draw();
         });
-
     };
     /**
      * 绘制
@@ -55,7 +57,6 @@ define(function(require){
         cxt.drawImage(this._bgPicCache,0,0,this.div.width,this.div.height);
         cxt.drawImage(this._spriteCache,0,0,this.div.width,this.div.height);
         cxt.drawImage(this._obstacleCache,0,0,this.div.width,this.div.height);
-
         //cxt.drawImage(this._quaTreeCache,0,0,this.div.width,this.div.height);
     };
     /**
@@ -189,6 +190,7 @@ define(function(require){
         self._geoCache.height = c_h;
 
         self._spriteCache = document.createElement('canvas');
+        //self._spriteCache = document.getElementById("spCanvas");
         self._spriteCache.width = c_w;
         self._spriteCache.height = c_h;
 
@@ -204,8 +206,6 @@ define(function(require){
         self._bgPicCache.width = c_w;
         self._bgPicCache.height = c_h;
         self.drawBgPic(self._bgPicCache);
-
-
     };
     return GameView;
 })

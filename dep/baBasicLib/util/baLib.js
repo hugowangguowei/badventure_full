@@ -1,6 +1,7 @@
 /**
  * Created by wangguowei on 2016/1/11.
  */
+var PI = Math.PI;
 
 exports.cloneObject = function(obj){
     if(typeof obj === "object"){
@@ -117,3 +118,27 @@ exports.getRelativeAngle = function(loc1,loc2){
     }
     return radian;
 }
+
+getAngle = function(angle){
+    var fAngle;
+    if(angle < 0){
+        var a = parseInt((-1*angle)/(Math.PI*2));
+        fAngle = angle + PI*2*(a+1);
+    }else{
+        fAngle = angle%(PI*2);
+    }
+    return fAngle;
+};
+
+
+exports.getIncludedAngle = function(angle1,angle2){
+    var a1,a2;
+    a1 = getAngle(angle1);
+    a2 = getAngle(angle2);
+
+    var a = a1 - a2;
+    if(a<0)a+=PI*2;
+    if(a > PI)a = PI*2 - a;
+    return a;
+}
+
