@@ -10,12 +10,12 @@ define(function(require){
         Map:mapManager.getMap("RR_c1"),
         Sprite:{
             "archer":{num:1},
-            "captain":{num:1},
-            "knight":{num:15},
-            "king":{num:1},
-            "chief":{num:2},
-            "barracks":{num:1},
-            //"darkTower":{num:1},
+            //"captain":{num:1},
+            //"knight":{num:15},
+            //"king":{num:1},
+            //"chief":{num:2},
+            //"barracks":{num:1},
+            ////"darkTower":{num:1},
 
             "bear":{num:15}
 

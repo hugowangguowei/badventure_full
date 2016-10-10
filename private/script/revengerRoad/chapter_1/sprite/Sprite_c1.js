@@ -54,6 +54,12 @@ function Sprite_c1(prop){
         maxHonor:10,//收到正反馈的最大参考值
         isDead:false
     };
+    //属性控制状态：每回合都会重置，用以检测在本回合发生的属性改变
+    this.propControlState = {
+        isLocChanged : false,
+        isSpeedChanged : false,
+        isDirChanged : false
+    };
     this.viewInfo = {
         stamp:0,
         baseActInterval:200,
@@ -123,7 +129,11 @@ Sprite_c1.prototype.changeLoc = function(_x,_y){
     this.changeLocFunc();
 };
 Sprite_c1.prototype.changeLocFunc = function(){
+    this.propControlState.isLocChanged = true;
 };
+Sprite_c1.prototype.isLocChanged = function(){
+    return this.propControlState.isLocChanged;
+}
 Sprite_c1.prototype.changeSpeed = function(_speed){
     var self = this;
     if(_speed <=0){
@@ -144,13 +154,20 @@ Sprite_c1.prototype.changeSpeed = function(_speed){
     self.changeSpeedFunc();
 };
 Sprite_c1.prototype.changeSpeedFunc = function(){
+    this.propControlState.isSpeedChanged = true;
 };
+Sprite_c1.prototype.isSpeedChanged = function(){
+    return this.propControlState.isSpeedChanged;
+}
 Sprite_c1.prototype.changeDir = function(){
-
+    this.changeDirFunc()
 };
 Sprite_c1.prototype.changeDirFunc = function(){
-
+    this.propControlState.isDirChanged = true;
 };
+Sprite_c1.prototype.isDirChanged = function(){
+    return this.propControlState.isDirChanged;
+}
 
 Sprite_c1.prototype.addToGeo = function(geo){
     this.geoInfo.bindGeo = geo;
@@ -253,6 +270,11 @@ Sprite_c1.prototype.action = function(){
             var attResult = this.attackHandle();
             self.setAttackInterval(attResult);
         }
+
+        //状态重置
+        for(var i in self.propControlState){
+            self.propControlState[i] = false;
+        }
     };
 };
 //动作函数（观察）======================================================
@@ -346,7 +368,14 @@ Sprite_c1.prototype.moveHandle = function () {
         dir = self.getMoveDir();
     }
     self.loc.direction = dir;
-    //TODO 速度调整暂时不添加
+    //速度调整
+    var _speedX = speed*Math.cos(dir);
+    var _speedY = speed*Math.sin(dir);
+    var landForm = self.geoInfo.bindGeo.getLandFormByLoc(loc);
+    _speedX += landForm.x;
+    _speedY += landForm.y;
+
+    //位移计算
     var _x,_y;
     if(_dis!= null &&(_dis <= speed)){
         self.loc.direction = oriDir;
@@ -354,8 +383,8 @@ Sprite_c1.prototype.moveHandle = function () {
         _y = aimLoc.y - loc.y;
     }
     else{
-        _x = speed * Math.cos(dir);
-        _y = speed * Math.sin(dir);
+        _x = _speedX;
+        _y = _speedY;
     }
     //障碍判断
     if(this.obstacleCheck(_x,_y)){

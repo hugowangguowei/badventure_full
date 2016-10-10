@@ -48,18 +48,17 @@ define(function(require){
             var loc = baLib.getPointOnDiv(e.pageX, e.pageY,canvas);
             var pLoc = {x:loc.x/c_w , y: loc.y/c_h};
             self.model.mouseInput('mousedown',pLoc);
-        },false)
+        },false);
         canvas.addEventListener('mousemove',function(e){
             var loc = baLib.getPointOnDiv(e.pageX, e.pageY,canvas);
             var pLoc = {x:loc.x/c_w , y: loc.y/c_h};
             self.model.mouseInput('mousemove',pLoc);
-        },false)
+        },false);
         canvas.addEventListener('mouseup',function(e){
             var loc = baLib.getPointOnDiv(e.pageX, e.pageY,canvas);
             var pLoc = {x:loc.x/c_w , y: loc.y/c_h};
             self.model.mouseInput('mouseup',pLoc);
-        },false)
-
+        },false);
     };
     GeoView.prototype.initPaper = function(){
         var self = this;
@@ -71,7 +70,7 @@ define(function(require){
         var height = self.model.paperInfo.height;
         var bx = canvas.width/width;
         var by = canvas.height/height;
-        //var color = self.model.colorInfo.colorList[0];
+
         if(this.showType == "color"){
             var color = "rgb(0,255,0)";
             cxt.fillStyle = color;

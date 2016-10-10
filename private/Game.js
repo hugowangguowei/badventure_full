@@ -136,6 +136,7 @@ Game.prototype.startMachine = function(){
             client_i = self._eventList[i];
             if(client_i.sprite){
                 client_i.socket.emit("event_msg",["refreshSprite",[client_i.sprite.getOutPutDetail()]]);
+
             }
         }
 
@@ -436,6 +437,20 @@ Game.prototype.clientDebug = function(info){
 
 }
 /**
+ * 获取游戏的简单信息
+ */
+Game.prototype.getGameInfo = function(){
+    var sprite;
+    for(var i in this.spriteList){
+        sprite = this.spriteList[i];
+        if(sprite.controllable&&!sprite.controller){
+            this.gameInfo.charaControl[sprite.type] = true;
+        }
+    }
+    return this.gameInfo;
+
+}
+/**
  * 测试代码——当{sprite}死亡的时候将该对象的id推入记录
  * @param sprite
  * @private
@@ -464,17 +479,3 @@ Game.prototype._testCheckDead = function(sprite){
         }
     }
 };
-/**
- * 获取游戏的简单信息
- */
-Game.prototype.getGameInfo = function(){
-    var sprite;
-    for(var i in this.spriteList){
-        sprite = this.spriteList[i];
-        if(sprite.controllable&&!sprite.controller){
-            this.gameInfo.charaControl[sprite.type] = true;
-        }
-    }
-    return this.gameInfo;
-
-}

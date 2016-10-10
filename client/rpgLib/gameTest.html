@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="UI/style.css" type="text/css"/>
+    <script type="text/javascript" src="../dep/require.js"></script>
+    <script type="text/javascript" src="../dep/jquery-1.9.1.js"></script>
+    <script type="text/javascript" src="./test/script/revengerRoad/chapter_1/buttonEvent.js"></script>
+    <script>
+        initUserId();
+        requirejs.config({
+            baseUrl:"../",
+            path:{
+                baBasicLib:"../baBasicLib",
+                strategyLib:"../strategyLib",
+                config:"./config",
+                gameStateMachine:"./gameStateMachine",
+                dep:"../dep",
+                privateLib:"./privateLib",
+                socket:":/socket",
+                test:"./test"
+            }
+        });
+        var gm;
+        var WSM;
+        //是否单身
+        var isSingle = false;
+        require(['' +
+                'rpgLib/Game',
+                'rpgLib/script/chapter_1',
+                'rpgLib/view/GAME_view'
+                ],
+                function(
+                        Game,chapter_1,GameView){
+                    gm = new Game();
+                    var mainShow = document.getElementById("mainShow");
+                    var gameView = new GameView(mainShow,gm);
+                    gm.loadChapter(chapter_1);
+
+        });
+    </script>
+</head>
+<body onload="init()">
+<input type="button" id = "login" value = "登录" onclick="test0()">
+<input type="password" id = "MPassword" placeholder="管理员登录">
+<input type="text" id = "userId" placeholder="输入你的昵称">
+<input type="button" id="setUserId" value="确定使用该昵称" onclick="registerId()">
+<hr>
+<input type="button" id = "t2" value="test2" onclick="test2()">
+<select id = "roomSelect" onchange="changeRoomSelect(this)"></select>
+<select id = "charaSelect"></select>
+<input type="button" id = "refreshGameList" value="刷新游戏列表" onclick="refreshGameList()">
+<input type="button" id = "t3" value="test3" onclick="test3()">
+<input type="button" id = "t1" value="test1" onclick="test1()">
+<input type="button" id = "t4" value="test4" onclick="test4()">
+<input type="button" id = "t5" value="test5" onclick="test5()">
+<input type="button" id = "t6" value="查看帮助文档" onclick="test6()">
+<hr>
+先点‘连接服务器’按钮，然后点 ‘加入游戏’， 键盘上的 ←→ ↑ ↓ 可以控制某个对象
+<hr>
+<canvas id = "mainCanvas"></canvas>
+<div id = "mainShow">
+    <textarea id = "mainText"></textarea>
+    <input type ="button" id = "choice_0" class="choice">
+    <input type ="button" id = "choice_1" class="choice">
+    <input type ="button" id = "choice_2" class="choice">
+    <input type ="button" id = "choice_3" class="choice">
+
+</div>
+</body>
+</html>
