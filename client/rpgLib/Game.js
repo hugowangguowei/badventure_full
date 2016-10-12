@@ -45,48 +45,37 @@ define(function(require){
     Game.prototype.startEngine = function(){
         this.fireEvent("nodeChange");
     };
-    Game.prototype.input = function (type,info,packNum){
+    Game.prototype.input = function (type,info){
         var self = this;
         switch (type){
-            case "addSprite":
-                var sprite_i = spriteManager.generateSpriteByDetail(info);
-                self.addSprite(sprite_i);
-                //self.fireEvent("spriteChange");
-                self.addEventToPool("spriteChange");
-                break;
-            case "refreshSprite":
-                for(var i = 0;i<info.length;i++){
-                    var sInfo = info[i];
-                    var id = sInfo.id;
-                    var sprite = self.spriteList[id];
-                    if(sprite){
-                        for(var m in sInfo){
-                            sprite[m] = sInfo[m];
-                        }
-                        //sprite.refreshGeo();
-                    }
-                    else{
-                        //之所以会有{！sprite}事件的发生，是因为角色死亡事件立刻触发
-                        //但是角色更新操作需要当前所有对象更新完成后才会触发事件
-                        //所以有可能当一个角色先执行了动作，该动作会被推送入refreshList
-                        //然后在同一帧，该角色被杀死了，就会出现这个问题
-                        //更新机制还需要改进。
-                    }
-                }
-                //self.fireEvent("spriteChange",info);
-                self.addEventToPool("spriteChange",info);
-                break;
-            case "removeSprite":
-                self.removeSpriteById(info);
-                //self.fireEvent("spriteChange",info);
-                self.addEventToPool("spriteChange",info);
-                break;
-            case "gameOver":
-                alert(info.detail);
-                //self.fireEvent("recordChange",info.record);
-                self.addEventToPool("recordChange",info.record);
+            case "choice":
+                self._choiceInput(info);
                 break;
         }
+    };
+    Game.prototype._choiceInput = function(info){
+        var self = this;
+        var curNode = self.curNode;
+        var choice = curNode.choiceList[info];
+        if(!choice)return;
+        var choiceResult = choice.result;
+        var propChange = choiceResult.propChange;
+        var locChange = choiceResult.locChange;
+        var sceneChange = choiceResult.sceneChange;
+        self._propChangeHandler(propChange);
+        self._locChangeHandler(locChange);
+        self._sceneChangeHandler(sceneChange);
+    };
+    Game.prototype._propChangeHandler = function(propChange){
+    };
+    Game.prototype._locChangeHandler = function(locChange){
+    };
+    Game.prototype._sceneChangeHandler = function(sceneChange){
+        if(!sceneChange)return ;
+        var scene = this.nodeList[sceneChange];
+        if(!scene)throw new error("can't find a scene named" + sceneChange);
+        this.curNode = scene;
+        this.fireEvent("nodeChange");
     };
     Game.prototype.addEventToPool = function(eventType,info){
         var _info = info||0;

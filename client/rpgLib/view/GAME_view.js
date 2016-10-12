@@ -15,12 +15,20 @@ define(function(require){
         this.initialize(div,model);
     };
     GameView.prototype = new View();
+    /**
+     * 初始化
+     * @param div
+     * @param model
+     */
     GameView.prototype.initialize = function(div,model){
         this.div = div;
         this.model = model;
         this.addOriListeners();
         this.addBasicStruct();
     };
+    /**
+     * 添加初始监听
+     */
     GameView.prototype.addOriListeners = function(){
         var self = this;
         var prop = {
@@ -29,7 +37,6 @@ define(function(require){
         };
 
         this.model.addListener("nodeChange",prop,function(){
-
             self.draw();
         });
     };
@@ -56,20 +63,6 @@ define(function(require){
 
     };
     /**
-     * 绘制背景图片
-     */
-    GameView.prototype.drawBgPic = function(canvas){
-        var cxt = canvas.getContext("2d");
-        cxt.clearRect(0,0,canvas.width,canvas.height);
-        var bgImage = new Image();
-        //bgImage.src = wsConfig.WS_URL +"/client/image/c1_map.png";
-        //bgImage.src = "localHost:18080/client/image/DarkTower.png";
-        bgImage.src = "http://badventure.duapp.com/client/image/c1_map.png";
-        bgImage.onload = function(){
-            cxt.drawImage(bgImage,0,0,canvas.width,canvas.height);
-        }
-    };
-    /**
      * 添加基本元素
      */
     GameView.prototype.addBasicStruct = function(){
@@ -79,34 +72,23 @@ define(function(require){
 
         var textArea = document.getElementById("mainText");
 
-
-        var canvas = this.div;
-        canvas.style.width = c_w + "px";
-        canvas.style.height = c_h + "px";
-        canvas.width = c_w;
-        canvas.height = c_h;
-
-        self._geoCache = document.createElement("canvas");
-        self._geoCache.width =c_w;
-        self._geoCache.height = c_h;
-
-        self._spriteCache = document.createElement('canvas');
-        //self._spriteCache = document.getElementById("spCanvas");
-        self._spriteCache.width = c_w;
-        self._spriteCache.height = c_h;
-
-        self._quaTreeCache = document.createElement('canvas');
-        self._quaTreeCache.width = c_w;
-        self._quaTreeCache.height = c_h;
-
-        self._obstacleCache = document.createElement('canvas');
-        self._obstacleCache.width = c_w;
-        self._obstacleCache.height = c_h;
-
-        self._bgPicCache = document.createElement('canvas');
-        self._bgPicCache.width = c_w;
-        self._bgPicCache.height = c_h;
-        self.drawBgPic(self._bgPicCache);
+        var ch_1 = document.getElementById("choice_0");
+        ch_1.onclick = function(){
+            self.model.input("choice",0);
+        }
+        var ch_2 = document.getElementById("choice_1");
+        ch_2.onclick = function(){
+            self.model.input("choice",1);
+        }
+        var ch_3 = document.getElementById("choice_2");
+        ch_3.onclick = function(){
+            self.model.input("choice",2);
+        }
+        var ch_4 = document.getElementById("choice_3");
+        ch_4 .onclick = function(){
+            self.model.input("choice",3);
+        }
     };
+
     return GameView;
 })
